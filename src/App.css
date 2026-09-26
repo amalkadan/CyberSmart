@@ -1,0 +1,64 @@
+.login-page {
+  width: 100%;
+  min-height: 100vh;
+  display: grid;
+
+  /* الكرة يسارًا وLogin يمينًا */
+  grid-template-columns: minmax(0, 1fr) 500px;
+
+  direction: ltr;
+  overflow: hidden;
+  /* background: #020617; */
+}
+
+.globe-side {
+  grid-column: 1;
+  width: 100%;
+  height: 100vh;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.login-side {
+  grid-column: 2;
+  height: 100vh;
+  min-height: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 15px 24px;
+  direction: rtl;
+  overflow-y: auto;
+
+  background:
+    radial-gradient(
+      circle at center,
+      rgba(22, 163, 110, 0.12),
+      transparent 58%
+    ),
+    linear-gradient(135deg, #061727, #020617);
+
+  border-left: 1px solid rgba(71, 231, 160, 0.15);
+}
+
+@media (max-width: 950px) {
+  .login-page {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+
+  .login-side {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+    min-height: 100vh;
+  }
+
+  .globe-side {
+    grid-column: 1;
+    grid-row: 2;
+    height: 550px;
+  }
+}
