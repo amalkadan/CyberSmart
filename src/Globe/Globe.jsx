@@ -102,6 +102,8 @@ function Globe() {
     };
   }, []);
 
+ 
+
   function handleGlobeReady() {
     const globe = globeRef.current;
 
