@@ -37,6 +37,221 @@ const menuItems = [
   { id: "messages", label: "الرسائل", icon: Mail },
   { id: "settings", label: "الإعدادات", icon: Settings },
 ];
+const pageInformation = {
+  learning: {
+    title: "مسار التعلم",
+    description: "تابعي الدروس والأنشطة بالتسلسل.",
+    icon: BookOpen,
+  },
+
+  results: {
+    title: "نتائجي",
+    description: "شاهدي نتائج الاختبارات والأنشطة التي أكملتها.",
+    icon: BarChart3,
+  },
+
+  achievements: {
+    title: "إنجازاتي",
+    description: "شاهدي الشارات والجوائز التي حصلتِ عليها.",
+    icon: Trophy,
+  },
+
+  safety: {
+    title: "دليل الأمان",
+    description: "تعلمي أهم النصائح لحماية حساباتك وبياناتك.",
+    icon: ShieldCheck,
+  },
+
+  messages: {
+    title: "الرسائل",
+    description: "شاهدي رسائل المعلم والتنبيهات الجديدة.",
+    icon: Mail,
+  },
+
+  settings: {
+    title: "الإعدادات",
+    description: "عدّلي بيانات الحساب وإعدادات لوحة الطالب.",
+    icon: Settings,
+  },
+};
+
+function StudentSectionPage({ activePage, onBackHome }) {
+  /*
+    صفحة الأنشطة لها تصميم مختلف،
+    لذلك نعرضها بشكل منفصل.
+  */
+  if (activePage === "activities") {
+    return (
+      <section className="student-inner-page">
+        <header className="inner-page-header">
+          <div>
+            <span className="inner-page-label">الأنشطة التعليمية</span>
+            <h1>اختاري النشاط</h1>
+            <p>اختبري معرفتك في حماية الحسابات واتخاذ القرارات الآمنة.</p>
+          </div>
+
+          <Gamepad2 size={52} />
+        </header>
+
+        <div className="activities-grid">
+          <article className="activity-item password-activity">
+            <div className="activity-item-icon">
+              <LockKeyhole size={55} />
+            </div>
+
+            <h2>اختبر كلمة المرور</h2>
+
+            <p>اختاري كلمة المرور الأقوى وتعرفي على طرق حماية حسابك.</p>
+
+            <button type="button">
+              ابدئي الاختبار
+              <ChevronLeft size={20} />
+            </button>
+          </article>
+
+          <article className="activity-item decision-activity">
+            <div className="activity-item-icon">
+              <CheckCircle2 size={55} />
+            </div>
+
+            <h2>اختر القرار الآمن</h2>
+
+            <p>اختاري التصرف الصحيح في مجموعة من المواقف الرقمية.</p>
+
+            <button type="button">
+              ابدئي الاختبار
+              <ChevronLeft size={20} />
+            </button>
+          </article>
+
+          <article className="activity-item safety-activity">
+            <div className="activity-item-icon">
+              <Lightbulb size={55} />
+            </div>
+
+            <h2>نصائح الحماية</h2>
+
+            <p>اختبري معرفتك بحماية الأجهزة والخصوصية والبيانات.</p>
+
+            <button type="button">
+              ابدئي الاختبار
+              <ChevronLeft size={20} />
+            </button>
+          </article>
+        </div>
+
+        <button className="back-home-button" type="button" onClick={onBackHome}>
+          العودة إلى الرئيسية
+          <Home size={20} />
+        </button>
+      </section>
+    );
+  }
+
+  /*
+    صفحة الواجبات لها محتوى خاص بها.
+  */
+  if (activePage === "homework") {
+    return (
+      <section className="student-inner-page">
+        <header className="inner-page-header">
+          <div>
+            <span className="inner-page-label">المهام الدراسية</span>
+            <h1>واجباتي</h1>
+            <p>تابعي الواجبات المطلوبة ومواعيد تسليمها.</p>
+          </div>
+
+          <ClipboardList size={52} />
+        </header>
+
+        <div className="homework-page-list">
+          <article className="homework-page-item">
+            <div className="homework-page-icon">
+              <LockKeyhole size={35} />
+            </div>
+
+            <div>
+              <h2>كلمة المرور الآمنة</h2>
+
+              <p>
+                <CalendarDays size={17} />
+                موعد التسليم: الخميس
+              </p>
+            </div>
+
+            <span className="homework-status pending">قيد التنفيذ</span>
+
+            <button type="button">فتح الواجب</button>
+          </article>
+
+          <article className="homework-page-item">
+            <div className="homework-page-icon">
+              <ShieldCheck size={35} />
+            </div>
+
+            <div>
+              <h2>حماية المعلومات الشخصية</h2>
+
+              <p>
+                <CalendarDays size={17} />
+                موعد التسليم: الأحد
+              </p>
+            </div>
+
+            <span className="homework-status new">جديد</span>
+
+            <button type="button">فتح الواجب</button>
+          </article>
+        </div>
+
+        <button className="back-home-button" type="button" onClick={onBackHome}>
+          العودة إلى الرئيسية
+          <Home size={20} />
+        </button>
+      </section>
+    );
+  }
+
+  /*
+    بقية صفحات القائمة تستخدم التصميم العام نفسه.
+  */
+  const currentPage = pageInformation[activePage];
+
+  if (!currentPage) {
+    return null;
+  }
+
+  const PageIcon = currentPage.icon;
+
+  return (
+    <section className="student-inner-page">
+      <header className="inner-page-header">
+        <div>
+          <span className="inner-page-label">لوحة الطالب</span>
+
+          <h1>{currentPage.title}</h1>
+
+          <p>{currentPage.description}</p>
+        </div>
+
+        <PageIcon size={52} />
+      </header>
+
+      <div className="empty-page-content">
+        <PageIcon size={75} strokeWidth={1.4} />
+
+        <h2>{currentPage.title}</h2>
+
+        <p>سيتم وضع محتوى قسم {currentPage.title} هنا.</p>
+      </div>
+
+      <button className="back-home-button" type="button" onClick={onBackHome}>
+        العودة إلى الرئيسية
+        <Home size={20} />
+      </button>
+    </section>
+  );
+}
 
 function StudentDashboard() {
   const navigate = useNavigate();
@@ -140,173 +355,181 @@ function StudentDashboard() {
             👩🏻‍🎓
           </button>
         </header>
+        {activePage === "home" ? (
+          <>
+            {/* بطاقة الترحيب */}
 
-        {/* بطاقة الترحيب */}
-
-        <section className="student-welcome-card">
-          <div className="welcome-shield-picture">
-            <ShieldCheck size={140} strokeWidth={1.5} />
-          </div>
-
-          <div className="student-welcome-text">
-            <h1>مرحبًا، سارة!</h1>
-
-            <p>
-              أكملتِ <strong>٦</strong> من <strong>١٠</strong> أنشطة
-            </p>
-
-            <span className="student-progress-message">
-              تابعي التقدم الرائع
-              <Star size={20} fill="currentColor" />
-            </span>
-
-            <div className="student-progress-area">
-              <div className="student-progress-track">
-                <span />
+            <section className="student-welcome-card">
+              <div className="welcome-shield-picture">
+                <ShieldCheck size={140} strokeWidth={1.5} />
               </div>
 
-              <strong>٦ / ١٠</strong>
-            </div>
-          </div>
-
-          <div className="welcome-student-picture">👩🏻‍💻</div>
-        </section>
-
-        {/* النشاط التالي والواجب */}
-
-        <section className="student-main-cards">
-          <article className="student-card next-activity">
-            <header className="student-card-title">
-              <h2>النشاط التالي</h2>
-              <Zap size={28} fill="currentColor" />
-            </header>
-
-            <div className="next-activity-content">
-              <div className="phishing-picture">🎣✉️</div>
-
-              <div>
-                <h3>اكتشفي رسالة التصيد</h3>
-
-                <button
-                  className="start-activity"
-                  type="button"
-                  onClick={startActivity}
-                >
-                  ابدئي النشاط
-                  <ChevronLeft size={21} />
-                </button>
-              </div>
-            </div>
-          </article>
-
-          <article className="student-card student-homework">
-            <header className="student-card-title">
-              <h2>واجباتي</h2>
-              <FileText size={28} />
-            </header>
-
-            <button className="homework-details" type="button">
-              <div className="homework-lock">
-                <LockKeyhole size={50} />
-              </div>
-
-              <div className="homework-text">
-                <h3>كلمة المرور الآمنة</h3>
+              <div className="student-welcome-text">
+                <h1>مرحبًا، سارة!</h1>
 
                 <p>
-                  <CalendarDays size={18} />
-                  موعد التسليم: الخميس
+                  أكملتِ <strong>٦</strong> من <strong>١٠</strong> أنشطة
                 </p>
+
+                <span className="student-progress-message">
+                  تابعي التقدم الرائع
+                  <Star size={20} fill="currentColor" />
+                </span>
+
+                <div className="student-progress-area">
+                  <div className="student-progress-track">
+                    <span />
+                  </div>
+
+                  <strong>٦ / ١٠</strong>
+                </div>
               </div>
 
-              <ChevronLeft size={28} />
+              <div className="welcome-student-picture">👩🏻‍💻</div>
+            </section>
+
+            {/* النشاط التالي والواجب */}
+
+            <section className="student-main-cards">
+              <article className="student-card next-activity">
+                <header className="student-card-title">
+                  <h2>النشاط التالي</h2>
+                  <Zap size={28} fill="currentColor" />
+                </header>
+
+                <div className="next-activity-content">
+                  <div className="phishing-picture">🎣✉️</div>
+
+                  <div>
+                    <h3>اكتشفي رسالة التصيد</h3>
+
+                    <button
+                      className="start-activity"
+                      type="button"
+                      onClick={startActivity}
+                    >
+                      ابدئي النشاط
+                      <ChevronLeft size={21} />
+                    </button>
+                  </div>
+                </div>
+              </article>
+
+              <article className="student-card student-homework">
+                <header className="student-card-title">
+                  <h2>واجباتي</h2>
+                  <FileText size={28} />
+                </header>
+
+                <button className="homework-details" type="button">
+                  <div className="homework-lock">
+                    <LockKeyhole size={50} />
+                  </div>
+
+                  <div className="homework-text">
+                    <h3>كلمة المرور الآمنة</h3>
+
+                    <p>
+                      <CalendarDays size={18} />
+                      موعد التسليم: الخميس
+                    </p>
+                  </div>
+
+                  <ChevronLeft size={28} />
+                </button>
+              </article>
+            </section>
+
+            {/* النقاط والشارات والنصيحة */}
+
+            <section className="student-secondary-cards">
+              <article className="student-card student-points-card">
+                <header className="student-card-title">
+                  <h2>نقاطي</h2>
+                  <Star size={28} fill="currentColor" />
+                </header>
+
+                <div className="student-points-content">
+                  <div className="student-medal">
+                    <Star size={53} fill="currentColor" />
+                  </div>
+
+                  <strong>٨٥٠ نقطة</strong>
+                </div>
+              </article>
+
+              <article className="student-card student-badges-card">
+                <header className="student-card-title">
+                  <h2>شاراتي</h2>
+                  <Trophy size={28} fill="currentColor" />
+                </header>
+
+                <div className="student-badges">
+                  <div className="student-badge-item">
+                    <div className="student-badge purple">
+                      <Mail size={40} />
+                      <CheckCircle2 size={24} />
+                    </div>
+
+                    <p>محققة التصيد</p>
+                  </div>
+
+                  <div className="student-badge-item">
+                    <div className="student-badge blue">
+                      <ShieldCheck size={43} />
+                      <CheckCircle2 size={24} />
+                    </div>
+
+                    <p>حامية الخصوصية</p>
+                  </div>
+                </div>
+              </article>
+
+              <article className="student-card student-tip-card">
+                <header className="student-card-title">
+                  <h2>نصيحة اليوم</h2>
+                  <Lightbulb size={29} fill="currentColor" />
+                </header>
+
+                <div className="student-tip-content">
+                  <p>
+                    لا تشاركي كلمة المرور
+                    <br />
+                    مع أي شخص
+                  </p>
+
+                  <Lightbulb size={63} fill="currentColor" />
+                </div>
+              </article>
+            </section>
+
+            {/* متابعة التعلم */}
+
+            <button
+              className="continue-learning"
+              type="button"
+              onClick={() => setActivePage("learning")}
+            >
+              <div className="learning-books">📚 💻</div>
+
+              <span className="learning-arrow">
+                <ChevronLeft size={25} />
+              </span>
+
+              <div>
+                <h2>تابعي التعلم</h2>
+                <p>هناك المزيد من الأنشطة الشيقة في مسار التعلم</p>
+              </div>
+
+              <span className="more-books">📚</span>
             </button>
-          </article>
-        </section>
-
-        {/* النقاط والشارات والنصيحة */}
-
-        <section className="student-secondary-cards">
-          <article className="student-card student-points-card">
-            <header className="student-card-title">
-              <h2>نقاطي</h2>
-              <Star size={28} fill="currentColor" />
-            </header>
-
-            <div className="student-points-content">
-              <div className="student-medal">
-                <Star size={53} fill="currentColor" />
-              </div>
-
-              <strong>٨٥٠ نقطة</strong>
-            </div>
-          </article>
-
-          <article className="student-card student-badges-card">
-            <header className="student-card-title">
-              <h2>شاراتي</h2>
-              <Trophy size={28} fill="currentColor" />
-            </header>
-
-            <div className="student-badges">
-              <div className="student-badge-item">
-                <div className="student-badge purple">
-                  <Mail size={40} />
-                  <CheckCircle2 size={24} />
-                </div>
-
-                <p>محققة التصيد</p>
-              </div>
-
-              <div className="student-badge-item">
-                <div className="student-badge blue">
-                  <ShieldCheck size={43} />
-                  <CheckCircle2 size={24} />
-                </div>
-
-                <p>حامية الخصوصية</p>
-              </div>
-            </div>
-          </article>
-
-          <article className="student-card student-tip-card">
-            <header className="student-card-title">
-              <h2>نصيحة اليوم</h2>
-              <Lightbulb size={29} fill="currentColor" />
-            </header>
-
-            <div className="student-tip-content">
-              <p>
-                لا تشاركي كلمة المرور
-                <br />
-                مع أي شخص
-              </p>
-
-              <Lightbulb size={63} fill="currentColor" />
-            </div>
-          </article>
-        </section>
-
-        {/* متابعة التعلم */}
-
-        <button
-          className="continue-learning"
-          type="button"
-          onClick={() => setActivePage("learning")}
-        >
-          <div className="learning-books">📚 💻</div>
-
-          <span className="learning-arrow">
-            <ChevronLeft size={25} />
-          </span>
-
-          <div>
-            <h2>تابعي التعلم</h2>
-            <p>هناك المزيد من الأنشطة الشيقة في مسار التعلم</p>
-          </div>
-
-          <span className="more-books">📚</span>
-        </button>
+          </>
+        ) : (
+          <StudentSectionPage
+            activePage={activePage}
+            onBackHome={() => setActivePage("home")}
+          />
+        )}
       </main>
     </div>
   );
