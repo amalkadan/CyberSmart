@@ -19,13 +19,22 @@ export default function RootLayout() {
   const navigate = useNavigate();
 
   // دالة تسجيل الخروج
-  const handleLogout = () => {
-    // 1. إذا كان لديك بيانات جلسة أو توكن مسجلة في localStorage/sessionStorage يمكنك مسحها هنا:
-    // localStorage.removeItem('token');
+async function handleLogout() {
+    try {
+      const response = await fetch("http://localhost:4000/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
 
-    // 2. التوجيه إلى صفحة تسجيل الدخول الرئيسية
-    navigate('/', { replace: true });
-  };
+      if (!response.ok) {
+        throw new Error("Logout failed");
+      }
+
+      navigate("/", { replace: true });
+    } catch {
+      alert("تعذر تسجيل الخروج، حاول مرة أخرى");
+    }
+  }
 
   return (
     <div className="layout-container" dir="rtl">
