@@ -259,8 +259,22 @@ function StudentDashboard() {
   const [activePage, setActivePage] = useState("home");
   const [searchText, setSearchText] = useState("");
 
-  function handleLogout() {
-    navigate("/");
+
+  async function handleLogout() {
+    try {
+      const response = await fetch("http://localhost:4000/auth/logout", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error("Logout failed");
+      }
+
+      navigate("/", { replace: true });
+    } catch {
+      alert("تعذر تسجيل الخروج، حاول مرة أخرى");
+    }
   }
 
   function startActivity() {
@@ -290,17 +304,12 @@ function StudentDashboard() {
               <button
                 key={item.id}
                 type="button"
-                className={`student-nav-button ${
-                  activePage === item.id ? "active" : ""
-                }`}
-                onClick={() => setActivePage(item.id)}
-              >
+                className={`student-nav-button ${activePage === item.id ? "active" : ""}`}
+                onClick={() => setActivePage(item.id)}>
                 <span className="student-nav-icon">
                   <Icon size={23} />
 
-                  {item.id === "messages" && (
-                    <span className="student-message-dot" />
-                  )}
+                  {item.id === "messages" && <span className="student-message-dot" />}
                 </span>
 
                 <span>{item.label}</span>
@@ -311,11 +320,7 @@ function StudentDashboard() {
 
         <div className="student-sidebar-line" />
 
-        <button
-          className="student-logout-button"
-          type="button"
-          onClick={handleLogout}
-        >
+        <button className="student-logout-button" type="button" onClick={handleLogout}>
           <LogOut size={23} />
           تسجيل الخروج
         </button>
@@ -338,20 +343,12 @@ function StudentDashboard() {
             />
           </div>
 
-          <button
-            className="student-notification"
-            type="button"
-            aria-label="الإشعارات"
-          >
+          <button className="student-notification" type="button" aria-label="الإشعارات">
             <Bell size={25} />
             <span />
           </button>
 
-          <button
-            className="student-profile"
-            type="button"
-            aria-label="الملف الشخصي"
-          >
+          <button className="student-profile" type="button" aria-label="الملف الشخصي">
             👩🏻‍🎓
           </button>
         </header>
@@ -403,11 +400,7 @@ function StudentDashboard() {
                   <div>
                     <h3>اكتشفي رسالة التصيد</h3>
 
-                    <button
-                      className="start-activity"
-                      type="button"
-                      onClick={startActivity}
-                    >
+                    <button className="start-activity" type="button" onClick={startActivity}>
                       ابدئي النشاط
                       <ChevronLeft size={21} />
                     </button>
@@ -505,11 +498,7 @@ function StudentDashboard() {
 
             {/* متابعة التعلم */}
 
-            <button
-              className="continue-learning"
-              type="button"
-              onClick={() => setActivePage("learning")}
-            >
+            <button className="continue-learning" type="button" onClick={() => setActivePage("learning")}>
               <div className="learning-books">📚 💻</div>
 
               <span className="learning-arrow">
@@ -525,10 +514,7 @@ function StudentDashboard() {
             </button>
           </>
         ) : (
-          <StudentSectionPage
-            activePage={activePage}
-            onBackHome={() => setActivePage("home")}
-          />
+          <StudentSectionPage activePage={activePage} onBackHome={() => setActivePage("home")} />
         )}
       </main>
     </div>
