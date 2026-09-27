@@ -15,7 +15,8 @@ function LoginPanel() {
 
     if (accountType === "student") {
       navigate("/student");
-      return;
+    } else if (accountType === "teacher") {
+      navigate("/teacher");
     }
   }
 
