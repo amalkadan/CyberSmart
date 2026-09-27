@@ -111,3 +111,45 @@
 
 .orange-card { background-color: #fff7ed; }
 .orange-text { color: #c2410c; }
+
+
+
+/* إجبار نصوص الكروت والعناوين على الظهور باللون الغامق */
+.stat-card .card-title {
+  color: #334155 !important;
+}
+
+.stat-card .card-value {
+  color: #0f172a !important;
+}
+
+.stat-card .card-subtitle {
+  color: #64748b !important;
+}
+
+/* الكرت البرتقالي الخاص بالطلاب الذين يحتاجون متابعة */
+.stat-card.orange-card .card-title,
+.stat-card.orange-card .card-subtitle {
+  color: #c2410c !important;
+}
+
+
+/* ظل خفيف وأنيق يعطي تجسيم لطيف بدون تغبيش زاد */
+.stat-card .card-title,
+.stat-card .card-value,
+.stat-card .card-subtitle {
+  color: #1e293b !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
+}
+
+/* لون العناوين الفرعية مع نفس الظل الخفيف */
+.stat-card .card-subtitle {
+  color: #64748b !important;
+}
+
+/* الكرت البرتقالي */
+.stat-card.orange-card .card-title,
+.stat-card.orange-card .card-subtitle {
+  color: #c2410c !important;
+  text-shadow: 0 1px 2px rgba(194, 65, 12, 0.12) !important;
+}
