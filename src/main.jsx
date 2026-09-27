@@ -1,8 +1,8 @@
-import { StrictMode } from 'react';
+ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 
-import App, { LoginPage } from './App.jsx'; // 👈 استيراد LoginPage من App.jsx
+import App, { LoginPage } from './App.jsx'; 
 import StudentDashboard from './StudentPanel/StudentDashboard.jsx';
 
 import Rootlayout from './TeacherPanel/layouts/Rootlayout.jsx';
@@ -15,6 +15,11 @@ import TeacherResults from './TeacherPanel/pages/TeacherResults.jsx';
 import TeacherMessages from './TeacherPanel/pages/TeacherMessages.jsx';
 import TeacherSettings from './TeacherPanel/pages/TeacherSetting.jsx';
 
+// 1. استيراد صفحات الألعاب (تأكد من إنشاء المجلد والملفات)
+import PhishingGame from './TeacherPanel/pages/games/PhishingGame.jsx';
+import PasswordGame from './TeacherPanel/pages/games/PasswordGame.jsx';
+import DecisionGame from './TeacherPanel/pages/games/DecisionGame.jsx';
+
 import './index.css';
 
 const router = createBrowserRouter([
@@ -24,7 +29,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <LoginPage />, // 👈 استخدام LoginPage بدلاً من LoginPanel
+        element: <LoginPage />, 
       },
       {
         path: "student",
@@ -39,6 +44,12 @@ const router = createBrowserRouter([
           { path: "class", element: <TeacherClass /> },
           { path: "student-status", element: <TeacherStudentStatus /> },
           { path: "activities", element: <TeacherActivities /> },
+          
+          // 2. إضافة مسارات الألعاب هنا حتى تفتح بنفس الهيكل وبجانب القائمة الجانبية
+          { path: "activities/phishing", element: <PhishingGame /> },
+          { path: "activities/password", element: <PasswordGame /> },
+          { path: "activities/decision", element: <DecisionGame /> },
+
           { path: "results", element: <TeacherResults /> },
           { path: "messages", element: <TeacherMessages /> },
           { path: "settings", element: <TeacherSettings /> },
@@ -53,4 +64,3 @@ createRoot(document.getElementById('root')).render(
     <RouterProvider router={router} />
   </StrictMode>
 );
-
