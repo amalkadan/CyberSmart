@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import '../../style/PhishingGame.css';
-import heroMascot from '../../img/hero-shield.jpg';
-import gameBg from '../../img/game-bg.jpg'; // استيراد خلفية الذكاء الاصطناعي
+import "/src/TeacherPanel/style/PhishingGame.css";
+import heroMascot from "/src/TeacherPanel/img/hero-shield.jpg";
+import gameBg from "/src/TeacherPanel/img/game-bg.jpg";
 
 const mockQuestions = [
   {
@@ -25,7 +25,7 @@ const mockQuestions = [
     title: 'تأكيد الحجز المالي',
     sender: 'من: بنك فلسطين الإلكتروني',
     time: 'أمس 02:15 م',
-    body: 'تم تحويل مبلغ 50 شيكل لحسابك. للاطلاع على تفاصيل المعاملة يرجى الدخول لموقع البنك الرسمى.',
+    body: 'تم تحويل مبلغ 50 شيكل لحسابك. للاطلاع على تفاصيل المعاملة يرجى الدخول لموقع البنك الرسمي.',
     link: 'https://www.bankofpalestine.com',
     isPhishing: false,
     hints: [
@@ -82,7 +82,7 @@ export default function PhishingGame() {
         backgroundRepeat: 'no-repeat'
       }}
     >
-      {/* الهيدر العلوي المتناسق */}
+      {/* الهيدر العلوي */}
       <div className="game-top-header">
         <button className="game-back-btn" onClick={() => navigate('/teacher/activities')}>
           ← العودة للأنشطة
@@ -112,21 +112,19 @@ export default function PhishingGame() {
         </div>
       </div>
 
-      {/* المنطقة الوسطى المتناسقة */}
+      {/* شاشة السؤال (بدون تلميحات مسبقة) */}
       {!selectedAnswer ? (
         <div className="game-center-content">
           
-          {/* التلميحات الجانبية (يمين) */}
-          <div className="hints-side">
-            {currentQ.hints.map((hint, i) => (
-              <div key={i} className="hint-pill-card">
-                <span className="hint-pill-icon">{hint.icon}</span>
-                <span className="hint-pill-text">{hint.text}</span>
-              </div>
-            ))}
+          {/* الشخصية الكرتونية (اليمين) */}
+          <div className="mascot-side">
+            <div className="mascot-frame">
+              <img src={heroMascot} alt="الحارس الذكي" className="mascot-img-glow" />
+              <span className="question-mark-badge">؟</span>
+            </div>
           </div>
 
-          {/* الكرت الأبيض للرسالة المعروضة (المنتصف) */}
+          {/* الكرت الأبيض للرسالة المعروضة (الوسط) */}
           <div className="email-card-box">
             <div className="email-card-header">
               <div className="email-title-group">
@@ -148,17 +146,9 @@ export default function PhishingGame() {
             </div>
           </div>
 
-          {/* الشخصية الكرتونية مثبتة بإطار أنيق (يسار) */}
-          <div className="mascot-side">
-            <div className="mascot-frame">
-              <img src={heroMascot} alt="الحارس الذكي" className="mascot-img-glow" />
-              <span className="question-mark-badge">؟</span>
-            </div>
-          </div>
-
         </div>
       ) : (
-        /* شاشة التغذية الراجعة الكبيرة عند الإجابة */
+        /* شاشة التغذية الراجعة (تظهر التلميحات والأسباب هنا بعد الإجابة فقط) */
         <div className={`result-overlay-screen ${selectedAnswer}`}>
           <div className="result-card-content">
             <div className="result-banner">
@@ -177,6 +167,7 @@ export default function PhishingGame() {
               {currentQ.isPhishing ? 'هذه محاولة تصيّد!' : 'هذه رسالة آمنة!'}
             </p>
 
+            {/* عرض التلميحات الأسباب للطالب بعد إجابته */}
             <div className="result-reasons-grid">
               {currentQ.hints.map((hint, i) => (
                 <div key={i} className="reason-card">
@@ -197,7 +188,7 @@ export default function PhishingGame() {
         </div>
       )}
 
-      {/* أزرار الإجابة التفاعلية في المنتصف أسفل الصفحة */}
+      {/* أزرار الإجابة التفاعلية في الأسفل */}
       {!selectedAnswer && (
         <div className="game-footer-controls">
           <div className="action-buttons-group">

@@ -55,10 +55,7 @@ async function handleLogout() {
               <span>لوحة المعلّم</span>
             </NavLink>
 
-            <NavLink className="nav-link" to="/teacher/overview">
-              <FaChartBar className="nav-icon" />
-              <span>نظرة عامة</span>
-            </NavLink>
+
 
             <NavLink className="nav-link" to="/teacher/class">
               <FaUsers className="nav-icon" />
