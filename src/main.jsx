@@ -1,6 +1,6 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 
 import App, { LoginPage } from './App.jsx'; 
 import StudentDashboard from './StudentPanel/StudentDashboard.jsx';
@@ -55,8 +55,16 @@ const router = createBrowserRouter([
         path: "student",
         loader: requireRole("STUDENT"),
         shouldRevalidate: () => true,
-        element: <StudentDashboard />,
+        element: <Outlet />,
         errorElement: <p dir="rtl">تعذر الاتصال بالخادم. تأكد من تشغيله ثم أعد تحميل الصفحة.</p>,
+        children: [
+          { index: true, element: <StudentDashboard /> },
+          { path: "games/phishing", element: <PhishingGame returnPath="/student?page=activities" /> },
+          { path: "games/password", element: <PasswordGame returnPath="/student?page=activities" /> },
+          { path: "games/decision", element: <DecisionGame returnPath="/student?page=activities" /> },
+          { path: "games/monopoly", element: <CyberMonopolyGame returnPath="/student?page=activities" /> },
+          { path: "games/uno", element: <UnoSyberGame returnPath="/student?page=activities" /> },
+        ],
       },
       {
         path: "teacher",

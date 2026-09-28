@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "/src/TeacherPanel/style/PhishingGame.css";
 import heroMascot from "/src/TeacherPanel/img/hero-shield.jpg";
@@ -36,7 +36,7 @@ const mockQuestions = [
   }
 ];
 
-export default function PhishingGame() {
+export default function PhishingGame({ returnPath = '/teacher/activities' }) {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -67,7 +67,7 @@ export default function PhishingGame() {
       setCurrentIndex(currentIndex + 1);
     } else {
       alert(`انتهت اللعبة! مجموع نقاطك النهائي: ${score} نقطة ⭐️`);
-      navigate('/teacher/activities');
+      navigate(returnPath);
     }
   };
 
@@ -84,7 +84,7 @@ export default function PhishingGame() {
     >
       {/* الهيدر العلوي */}
       <div className="game-top-header">
-        <button className="game-back-btn" onClick={() => navigate('/teacher/activities')}>
+        <button className="game-back-btn" onClick={() => navigate(returnPath)}>
           ← العودة للأنشطة
         </button>
 

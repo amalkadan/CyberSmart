@@ -1,0 +1,3 @@
+export default function RulesModal({ onClose }) {
+  return <div className="modal open" onMouseDown={e => { if (e.target === e.currentTarget) onClose(); }}><div className="dialog" role="dialog" aria-modal="true" aria-label="طريقة اللعب"><div className="eyebrow">دليل سريع</div><h2>كيف تلعب؟</h2><ol className="rules"><li>ارمِ النرد وتحرك بعدد الخانات الظاهر.</li><li>خانات المجالات تفتح أسئلة في الأمن السيبراني.</li><li>تظهر الإجابة الصحيحة وشرحها بعد الإجابة أو انتهاء الوقت.</li><li>الإجابة الصحيحة تمنح 10 نقاط في المتوسط و20 نقطة في المستوى العالي.</li><li>تنتهي اللعبة بعد 12 دورًا لكل لاعب؛ أعلى نتيجة تفوز.</li></ol><div className="dialog-actions"><button className="btn primary" onClick={onClose}>فهمت</button></div></div></div>;
+}

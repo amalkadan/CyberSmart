@@ -786,8 +786,34 @@
   align-items: flex-start;
 
   color: #ffffff;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  background: #163047;
   border-radius: 22px;
   box-shadow: 0 15px 30px rgba(4, 36, 82, 0.16);
+}
+
+.activity-item::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(4, 18, 32, 0.12) 0%,
+    rgba(4, 18, 32, 0.66) 48%,
+    rgba(4, 18, 32, 0.96) 100%
+  );
+  content: "";
+}
+
+.activity-cover {
+  position: absolute;
+  z-index: -2;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .password-activity {
