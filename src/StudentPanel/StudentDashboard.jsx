@@ -259,7 +259,6 @@
 //   const [activePage, setActivePage] = useState("home");
 //   const [searchText, setSearchText] = useState("");
 
-
 //   async function handleLogout() {
 //     try {
 //       const response = await fetch("http://localhost:4000/auth/logout", {
@@ -523,12 +522,10 @@
 
 // export default StudentDashboard;
 
-
-
 //تعديل 2
 
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import {
   ShieldCheck,
@@ -554,6 +551,11 @@ import {
   FileText,
 } from "lucide-react";
 
+import phishingImage from "../TeacherPanel/img/phishing-card.jpg";
+import passwordImage from "../TeacherPanel/img/password-card.jpg";
+import decisionImage from "../TeacherPanel/img/decision-card.png";
+import monopolyImage from "../TeacherPanel/img/monopoly-card.jpeg";
+import unoImage from "../TeacherPanel/img/Uno_Cyber.jpeg";
 import "./StudentDashboard.css";
 
 const menuItems = [
@@ -609,6 +611,7 @@ const activitiesList = [
     title: "اكتشف التصيّد",
     desc: "اختبري معرفتك في اكتشاف الرسائل والمواقع الاحتيالية.",
     icon: Lightbulb,
+    image: phishingImage,
     path: "/student/games/phishing",
   },
   {
@@ -617,6 +620,7 @@ const activitiesList = [
     title: "اختبر كلمة المرور",
     desc: "اختاري كلمة المرور الأقوى وتعرفي على طرق حماية حسابك.",
     icon: LockKeyhole,
+    image: passwordImage,
     path: "/student/games/password",
   },
   {
@@ -625,6 +629,7 @@ const activitiesList = [
     title: "اختر القرار الآمن",
     desc: "اختاري التصرف الصحيح في مجموعة من المواقف الرقمية.",
     icon: CheckCircle2,
+    image: decisionImage,
     path: "/student/games/decision",
   },
   {
@@ -633,6 +638,7 @@ const activitiesList = [
     title: "لعبة المونوبولي",
     desc: "لعبة تفاعلية لتعلم مفاهيم الأمان الرقمي.",
     icon: Gamepad2,
+    image: monopolyImage,
     path: "/student/games/monopoly",
   },
   {
@@ -641,11 +647,17 @@ const activitiesList = [
     title: "UNO Cyber",
     desc: "لعبة تفاعلية لتعلم مفاهيم الأمان الرقمي.",
     icon: Gamepad2,
+    image: unoImage,
     path: "/student/games/uno",
-  }
+  },
 ];
 
-function StudentSectionPage({ activePage, onBackHome, activitiesStatus, navigate }) {
+function StudentSectionPage({
+  activePage,
+  onBackHome,
+  activitiesStatus,
+  navigate,
+}) {
   /*
     صفحة الأنشطة المعدلة للربط مع تحكم المعلم وتسلسل الطالب
   */
@@ -656,7 +668,9 @@ function StudentSectionPage({ activePage, onBackHome, activitiesStatus, navigate
           <div>
             <span className="inner-page-label">الأنشطة التعليمية</span>
             <h1>اختاري النشاط</h1>
-            <p>اختبري معرفتك في حماية الحسابات واتخاذ القرارات الآمنة بالتسلسل.</p>
+            <p>
+              اختبري معرفتك في حماية الحسابات واتخاذ القرارات الآمنة بالتسلسل.
+            </p>
           </div>
 
           <Gamepad2 size={52} />
@@ -666,11 +680,15 @@ function StudentSectionPage({ activePage, onBackHome, activitiesStatus, navigate
           {activitiesList.map((act) => {
             const Icon = act.icon;
             // جلب حالة النشاط المرجعة من السيرفر
-            const serverInfo = activitiesStatus.find((item) => item.activityId === act.id);
+            const serverInfo = activitiesStatus.find(
+              (item) => item.activityId === act.id,
+            );
 
             // افتراضياً مغلق إلا لو أكد السيرفر أنه مفتوح
             const isAccessible = serverInfo ? serverInfo.isAccessible : false;
-            const lockReason = serverInfo ? serverInfo.lockReason : "teacher_locked";
+            const lockReason = serverInfo
+              ? serverInfo.lockReason
+              : "teacher_locked";
 
             let lockMessage = "";
             if (!isAccessible) {
@@ -688,24 +706,37 @@ function StudentSectionPage({ activePage, onBackHome, activitiesStatus, navigate
                 style={{
                   opacity: isAccessible ? 1 : 0.7,
                   filter: isAccessible ? "none" : "grayscale(20%)",
-                  position: "relative"
+                  position: "relative",
                 }}
               >
+                <img
+                  className="activity-cover"
+                  src={act.image}
+                  alt=""
+                  aria-hidden="true"
+                />
+
                 {/* شارة حالة القفل فوق الكارت */}
-                <div style={{
-                  position: "absolute",
-                  top: "12px",
-                  left: "12px",
-                  background: isAccessible ? "#10B981" : "#EF4444",
-                  color: "#fff",
-                  padding: "4px 8px",
-                  borderRadius: "12px",
-                  fontSize: "12px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px"
-                }}>
-                  {isAccessible ? <Unlock size={14} /> : <LockKeyhole size={14} />}
+                <div
+                  style={{
+                    position: "absolute",
+                    top: "12px",
+                    left: "12px",
+                    background: isAccessible ? "#10B981" : "#EF4444",
+                    color: "#fff",
+                    padding: "4px 8px",
+                    borderRadius: "12px",
+                    fontSize: "12px",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "4px",
+                  }}
+                >
+                  {isAccessible ? (
+                    <Unlock size={14} />
+                  ) : (
+                    <LockKeyhole size={14} />
+                  )}
                   <span>{isAccessible ? "متاح" : "مغلق"}</span>
                 </div>
 
@@ -722,7 +753,14 @@ function StudentSectionPage({ activePage, onBackHome, activitiesStatus, navigate
                     <ChevronLeft size={20} />
                   </button>
                 ) : (
-                  <div style={{ color: "#EF4444", fontWeight: "bold", fontSize: "14px", marginTop: "10px" }}>
+                  <div
+                    style={{
+                      color: "#EF4444",
+                      fontWeight: "bold",
+                      fontSize: "14px",
+                      marginTop: "10px",
+                    }}
+                  >
                     {lockMessage}
                   </div>
                 )}
@@ -770,7 +808,12 @@ function StudentSectionPage({ activePage, onBackHome, activitiesStatus, navigate
             </div>
 
             <span className="homework-status pending">قيد التنفيذ</span>
-            <button type="button" onClick={() => navigate("/student/games/password")}>فتح الواجب</button>
+            <button
+              type="button"
+              onClick={() => navigate("/student/games/password")}
+            >
+              فتح الواجب
+            </button>
           </article>
 
           <article className="homework-page-item">
@@ -787,7 +830,12 @@ function StudentSectionPage({ activePage, onBackHome, activitiesStatus, navigate
             </div>
 
             <span className="homework-status new">جديد</span>
-            <button type="button" onClick={() => navigate("/student/games/phishing")}>فتح الواجب</button>
+            <button
+              type="button"
+              onClick={() => navigate("/student/games/phishing")}
+            >
+              فتح الواجب
+            </button>
           </article>
         </div>
 
@@ -838,8 +886,9 @@ function StudentSectionPage({ activePage, onBackHome, activitiesStatus, navigate
 
 function StudentDashboard() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
-  const [activePage, setActivePage] = useState("home");
+  const [activePage, setActivePage] = useState(searchParams.get("page") || "home");
   const [searchText, setSearchText] = useState("");
   const [activitiesStatus, setActivitiesStatus] = useState([]);
 
@@ -847,9 +896,12 @@ function StudentDashboard() {
   useEffect(() => {
     async function fetchActivitiesStatus() {
       try {
-        const response = await fetch("http://localhost:4000/students/my-activities", {
-          credentials: "include",
-        });
+        const response = await fetch(
+          "http://localhost:4000/students/my-activities",
+          {
+            credentials: "include",
+          },
+        );
         if (response.ok) {
           const data = await response.json();
           setActivitiesStatus(data);
@@ -881,8 +933,8 @@ function StudentDashboard() {
 
   function startActivity() {
     // توجيه الطالب لأول نشاط متاح له
-    const firstAvailable = activitiesList.find(act => {
-      const status = activitiesStatus.find(s => s.activityId === act.id);
+    const firstAvailable = activitiesList.find((act) => {
+      const status = activitiesStatus.find((s) => s.activityId === act.id);
       return status ? status.isAccessible : false;
     });
 
@@ -919,7 +971,9 @@ function StudentDashboard() {
               >
                 <span className="student-nav-icon">
                   <Icon size={23} />
-                  {item.id === "messages" && <span className="student-message-dot" />}
+                  {item.id === "messages" && (
+                    <span className="student-message-dot" />
+                  )}
                 </span>
                 <span>{item.label}</span>
               </button>
@@ -929,7 +983,11 @@ function StudentDashboard() {
 
         <div className="student-sidebar-line" />
 
-        <button className="student-logout-button" type="button" onClick={handleLogout}>
+        <button
+          className="student-logout-button"
+          type="button"
+          onClick={handleLogout}
+        >
           <LogOut size={23} />
           تسجيل الخروج
         </button>
@@ -949,12 +1007,20 @@ function StudentDashboard() {
             />
           </div>
 
-          <button className="student-notification" type="button" aria-label="الإشعارات">
+          <button
+            className="student-notification"
+            type="button"
+            aria-label="الإشعارات"
+          >
             <Bell size={25} />
             <span />
           </button>
 
-          <button className="student-profile" type="button" aria-label="الملف الشخصي">
+          <button
+            className="student-profile"
+            type="button"
+            aria-label="الملف الشخصي"
+          >
             👩🏻‍🎓
           </button>
         </header>
@@ -980,7 +1046,7 @@ function StudentDashboard() {
 
                 <div className="student-progress-area">
                   <div className="student-progress-track">
-                    <span style={{ width: '60%' }} />
+                    <span style={{ width: "60%" }} />
                   </div>
                   <strong>٦ / ١٠</strong>
                 </div>
@@ -1003,7 +1069,11 @@ function StudentDashboard() {
                   <div>
                     <h3>اكتشفي رسالة التصيد</h3>
 
-                    <button className="start-activity" type="button" onClick={startActivity}>
+                    <button
+                      className="start-activity"
+                      type="button"
+                      onClick={startActivity}
+                    >
                       ابدئي النشاط
                       <ChevronLeft size={21} />
                     </button>
@@ -1017,7 +1087,11 @@ function StudentDashboard() {
                   <FileText size={28} />
                 </header>
 
-                <button className="homework-details" type="button" onClick={() => setActivePage("homework")}>
+                <button
+                  className="homework-details"
+                  type="button"
+                  onClick={() => setActivePage("homework")}
+                >
                   <div className="homework-lock">
                     <LockKeyhole size={50} />
                   </div>
@@ -1094,7 +1168,11 @@ function StudentDashboard() {
             </section>
 
             {/* متابعة التعلم */}
-            <button className="continue-learning" type="button" onClick={() => setActivePage("learning")}>
+            <button
+              className="continue-learning"
+              type="button"
+              onClick={() => setActivePage("learning")}
+            >
               <div className="learning-books">📚 💻</div>
               <span className="learning-arrow">
                 <ChevronLeft size={25} />

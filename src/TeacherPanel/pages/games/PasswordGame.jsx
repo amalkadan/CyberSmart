@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FaArrowRight, FaLightbulb, FaChevronRight, FaChevronLeft } from 'react-icons/fa';
 import '/src/TeacherPanel/style/PasswordGame.css';
 
-export default function PasswordGame() {
+export default function PasswordGame({ returnPath = '/teacher/activities' }) {
   const navigate = useNavigate();
 
   // نموذج للأسئلة (يمكنك تعديلها وإضافة المزيد لاحقاً)
@@ -60,7 +60,7 @@ export default function PasswordGame() {
     <div className="pw-game-container" dir="rtl">
       {/* 1. الهيدر وزر العودة */}
       <div className="pw-game-header">
-        <button className="pw-back-btn" onClick={() => navigate('/teacher/activities')}>
+        <button className="pw-back-btn" onClick={() => navigate(returnPath)}>
           <FaArrowRight /> العودة للأنشطة
         </button>
       </div>
