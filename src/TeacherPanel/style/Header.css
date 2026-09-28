@@ -1,0 +1,72 @@
+.header-container {
+  display: flex !important;
+  justify-content: space-between !important; /* تباعد بين اليمين واليسار */
+  align-items: center !important; /* محاذاة عمودية في المنتصف */
+  background-color: #ffffff;
+  padding: 16px 28px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* الترحيب - جهة اليمين */
+.welcome-section {
+  text-align: right;
+}
+
+.welcome-section h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0f172a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.welcome-section p {
+  margin: 4px 0 0 0;
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* الأزرار - جهة اليسار */
+.header-actions {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+
+.icon-btn {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: none;
+  background-color: #f1f5f9;
+  color: #475569;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.icon-btn:hover {
+  background-color: #e2e8f0;
+}
+
+/* النقطة الحمراء فوق جرس الإشعارات */
+.badge {
+  position: absolute;
+  top: 9px;
+  right: 10px;
+  width: 8px;
+  height: 8px;
+  background-color: #ef4444;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+}

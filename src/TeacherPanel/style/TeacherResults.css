@@ -1,0 +1,201 @@
+.teacher-results-container {
+  padding: 24px;
+  min-height: 100vh;
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, sans-serif;
+  color: #ffffff;
+}
+
+/* 1. الهيدر */
+.results-header-banner {
+  background: linear-gradient(135deg, #020813 0%, #001727 100%);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  border-radius: 20px;
+  padding: 24px 32px;
+  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.results-header-banner h2 {
+  margin: 0;
+  font-size: 24px;
+  color: #38bdf8;
+}
+
+.results-header-banner p {
+  margin: 0;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+/* 2. كروت الإحصائيات */
+.results-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.results-stat-card {
+  background: #0b1528;
+  border: 1px solid #1e293b;
+  border-radius: 16px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.stat-icon {
+  font-size: 26px;
+  background: rgba(56, 189, 248, 0.1);
+  padding: 10px;
+  border-radius: 12px;
+}
+
+.results-stat-card h3 {
+  margin: 0;
+  font-size: 13px;
+  color: #94a3b8;
+}
+
+.stat-number {
+  margin: 4px 0 0 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: #38bdf8;
+}
+
+/* 3. كرت الرسم البياني */
+.chart-card {
+  background: #0b1528;
+  border: 1px solid #1e293b;
+  border-radius: 20px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+
+.chart-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.chart-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chart-title h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #f8fafc;
+}
+
+.chart-icon {
+  font-size: 20px;
+}
+
+.class-select-dropdown {
+  background: #070d19;
+  border: 1px solid #1e293b;
+  color: #f8fafc;
+  padding: 8px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+}
+
+.class-select-dropdown:focus {
+  border-color: #38bdf8;
+}
+
+.chart-wrapper {
+  height: 320px;
+  position: relative;
+}
+
+/* 4. الجدول التفصيلي */
+.results-table-card {
+  background: #0b1528;
+  border: 1px solid #1e293b;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.table-header-title {
+  padding: 20px 24px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.table-header-title h3 {
+  margin: 0;
+  font-size: 16px;
+  color: #38bdf8;
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: right;
+}
+
+.results-table th {
+  background: #070d19;
+  padding: 16px 24px;
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.results-table td {
+  padding: 16px 24px;
+  border-bottom: 1px solid #1e293b;
+  font-size: 14px;
+  color: #f8fafc;
+}
+
+.student-name {
+  font-weight: bold;
+}
+
+.class-badge {
+  background: rgba(56, 189, 248, 0.15);
+  color: #38bdf8;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.score-cell {
+  font-weight: bold;
+  color: #38bdf8;
+}
+
+.status-pill {
+  font-size: 12px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-weight: bold;
+}
+
+.status-pill.high {
+  background: rgba(34, 197, 94, 0.15);
+  color: #4ade80;
+}
+
+.status-pill.medium {
+  background: rgba(250, 204, 21, 0.15);
+  color: #facc15;
+}
+
+.status-pill.low {
+  background: rgba(239, 68, 68, 0.15);
+  color: #f87171;
+}

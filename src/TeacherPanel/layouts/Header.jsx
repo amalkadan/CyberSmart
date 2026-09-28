@@ -1,23 +1,24 @@
 import React from 'react';
-import { FaBell, FaUserCircle } from 'react-icons/fa';
+import { FaBell, FaUser } from 'react-icons/fa';
+import '../style/Header.css'; // أو حسب مسار ملف التنسيق لديك
 
 export default function Header() {
   return (
     <header className="header-container">
-      {/* جهة اليمين: الترحيب بالمعلمة */}
+      {/* جهة اليمين: الترحيب بالأستاذة أمل */}
       <div className="welcome-section">
         <h2>مرحباً، أستاذة أمل 🌅</h2>
         <p>معاً نبني جيلاً أكثر أماناً في العالم الرقمي</p>
       </div>
 
-      {/* جهة اليسار: الأيقونات والملف الشخصي */}
+      {/* جهة اليسار: أزرار الإشعارات والحساب */}
       <div className="header-actions">
-        <button className="icon-btn" title="التنبيهات">
+        <button className="icon-btn" aria-label="Notifications">
           <FaBell />
           <span className="badge"></span>
         </button>
-        <button className="icon-btn profile-btn" title="الملف الشخصي">
-          <FaUserCircle />
+        <button className="icon-btn" aria-label="User Profile">
+          <FaUser />
         </button>
       </div>
     </header>

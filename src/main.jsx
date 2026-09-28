@@ -7,7 +7,7 @@ import StudentDashboard from './StudentPanel/StudentDashboard.jsx';
 
 import Rootlayout from "./TeacherPanel/layouts/Rootlayout.jsx";
 import TeacherDashboard from "./TeacherPanel/pages/TeacherDashboard.jsx";
-import TeacherOverview from "./TeacherPanel/pages/TeacherOverview.jsx";
+
 import TeacherClass from "./TeacherPanel/pages/TeacherClass.jsx";
 import TeacherStudentStatus from "./TeacherPanel/pages/TeacherStudentStatus.jsx";
 import TeacherActivities from "./TeacherPanel/pages/TeacherActivities.jsx";
@@ -19,6 +19,8 @@ import TeacherSettings from "./TeacherPanel/pages/TeacherSetting.jsx";
 import PhishingGame from './TeacherPanel/pages/games/PhishingGame.jsx';
 import PasswordGame from './TeacherPanel/pages/games/PasswordGame.jsx';
 import DecisionGame from './TeacherPanel/pages/games/DecisionGame.jsx';
+import CyberMonopolyGame from './TeacherPanel/pages/games/CyberMonopolyGame.jsx';
+import UnoSyberGame from './TeacherPanel/pages/games/UnoSyberGame.jsx';
 
 import './index.css';
 import { requireRole } from "./auth/requireRole";
@@ -64,7 +66,6 @@ const router = createBrowserRouter([
         errorElement: <p dir="rtl">تعذر الاتصال بالخادم. تأكد من تشغيله ثم أعد تحميل الصفحة.</p>,
         children: [
           { index: true, element: <TeacherDashboard /> },
-          { path: "overview", element: <TeacherOverview /> },
           { path: "class", element: <TeacherClass /> },
           { path: "student-status", element: <TeacherStudentStatus /> },
           { path: "activities", element: <TeacherActivities /> },
@@ -73,7 +74,8 @@ const router = createBrowserRouter([
           { path: "activities/phishing", element: <PhishingGame /> },
           { path: "activities/password", element: <PasswordGame /> },
           { path: "activities/decision", element: <DecisionGame /> },
-
+          { path: "activities/monopoly", element: <CyberMonopolyGame /> },
+          { path: "activities/uno", element: <UnoSyberGame /> },
           { path: "results", element: <TeacherResults /> },
           { path: "messages", element: <TeacherMessages /> },
           { path: "settings", element: <TeacherSettings /> },

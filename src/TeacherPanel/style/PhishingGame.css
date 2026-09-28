@@ -110,23 +110,24 @@
   color: #94a3b8;
 }
 
-/* المنطقة الوسطى */
+/* المنطقة الوسطى متناسقة وموسّطة بحجم ممتازم للبطاقة والشخصية */
 .game-center-content {
-  display: grid;
-  grid-template-columns: 240px 1fr 240px;
-  gap: 32px;
+  display: flex;
+  justify-content: center;
   align-items: center;
-  margin: 15px 0;
+  gap: 36px;
+  max-width: 920px;
+  margin: 20px auto;
+  width: 100%;
 }
 
-/* الكرت الأبيض للبريد */
 .email-card-box {
+  flex: 1;
   background: #ffffff;
   border-radius: 24px;
   padding: 32px;
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
   color: #0f172a;
-  min-height: 220px;
 }
 
 .email-card-header {
@@ -255,7 +256,7 @@
   padding: 16px 40px;
   border-radius: 18px;
   font-size: 20px;
-  font-weight: 800;
+  font-weight: 1000;
   border: none;
   cursor: pointer;
   display: flex;
