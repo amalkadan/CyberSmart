@@ -1,77 +1,202 @@
+import { useState, useEffect } from "react";
+import { useNavigate, useRouteLoaderData } from "react-router-dom";
+import Header from "../layouts/Header.jsx"; // استدعاء الهيدر
+import "../style/TeacherDashboard.css"; // ملف التنسيق الخاص بالصفحة
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // 1. استدعاء useNavigate لتفعيل التنقل
-import Header from '../layouts/Header.jsx'; // استدعاء الهيدر
-import '../style/TeacherDashboard.css'; // ملف التنسيق الخاص بالصفحة
-
-import { 
-  FaUsers, 
-  FaCheckCircle, 
-  FaChartLine, 
+import {
+  FaUsers,
+  FaCheckCircle,
+  FaChartLine,
   FaExclamationTriangle,
   FaClock,
   FaBook,
   FaBolt,
   FaPlus,
   FaUserPlus,
-  FaChevronLeft
-} from 'react-icons/fa';
+  FaChevronLeft,
+} from "react-icons/fa";
 
 export default function TeacherDashboard() {
-  const [selectedClassFilter, setSelectedClassFilter] = useState('all');
+  const [selectedClassFilter, setSelectedClassFilter] = useState("all");
   const navigate = useNavigate(); // 2. تهيئة هوك التنقل
+  const teacher = useRouteLoaderData("teacher");
 
+  const [students, setStudents] = useState([]);
+  const [loadingStudents, setLoadingStudents] = useState(true);
+  const [studentsError, setStudentsError] = useState("");
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function loadStudents() {
+      try {
+        const response = await fetch("http://localhost:4000/students", {
+          credentials: "include",
+          signal: controller.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error("تعذر تحميل بيانات الطلاب");
+        }
+
+        const data = await response.json();
+        setStudents(data.students);
+      } catch (error) {
+        if (!controller.signal.aborted) {
+          setStudentsError(error.message);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoadingStudents(false);
+        }
+      }
+    }
+
+    loadStudents();
+
+    return () => controller.abort();
+  }, []);
+
+  const grades = [
+    { id: "7", name: "السابع" },
+    { id: "8", name: "الثامن" },
+    { id: "9", name: "التاسع" },
+  ];
+
+  const chartData = grades.map((grade) => {
+    const gradeStudents = students.filter((student) => {
+      const firstWord = student.className?.trim().split(/\s+/)[0];
+      return firstWord === grade.name;
+    });
+
+    let totalPercentage = 0;
+    let totalFinished = 0;
+
+    gradeStudents.forEach((student) => {
+      const categories = student.categoriesProgress ?? [];
+
+      const openCategories = categories.filter((category) => category.isOpen === true);
+
+      const studentAverage =
+        openCategories.length === 0
+          ? 0
+          : openCategories.reduce((sum, category) => sum + (category.percentage ?? 0), 0) / openCategories.length;
+
+      totalPercentage += studentAverage;
+
+      categories.forEach((category) => {
+        if (category.finished === true) {
+          totalFinished += 1;
+        }
+      });
+    });
+
+    const studentCount = gradeStudents.length;
+    const totalCategories = studentCount * 5;
+
+    const needsHelpCount = gradeStudents.filter((student) => {
+      const openUnfinishedCount = (student.categoriesProgress ?? []).filter(
+        (category) => category.isOpen === true && category.finished === false,
+      ).length;
+
+      return openUnfinishedCount >= 2;
+    }).length;
+
+    // This return belongs to grades.map().
+    return {
+      ...grade,
+      studentCount,
+      totalPercentage,
+      totalFinished,
+      needsHelpCount,
+      averageScore: studentCount === 0 ? 0 : Math.round((totalPercentage / studentCount) * 10) / 10,
+      completion: totalCategories === 0 ? 0 : Math.round((totalFinished / totalCategories) * 1000) / 10,
+    };
+  });
+
+  const visibleGrades = selectedClassFilter === "all" ? chartData : chartData.filter((grade) => grade.id === selectedClassFilter);
+
+  const selectedTotals = visibleGrades.reduce(
+    (totals, grade) => ({
+      studentCount: totals.studentCount + grade.studentCount,
+      totalPercentage: totals.totalPercentage + grade.totalPercentage,
+      totalFinished: totals.totalFinished + grade.totalFinished,
+      needsHelpCount: totals.needsHelpCount + grade.needsHelpCount,
+    }),
+    {
+      studentCount: 0,
+      totalPercentage: 0,
+      totalFinished: 0,
+      needsHelpCount: 0,
+    },
+  );
+
+  const categoryCount = selectedTotals.studentCount * 5;
+
+  const summaryAverageScore =
+    selectedTotals.studentCount === 0 ? 0 : Math.round((selectedTotals.totalPercentage / selectedTotals.studentCount) * 10) / 10;
+  const summaryCompletion = categoryCount === 0 ? 0 : Math.round((selectedTotals.totalFinished / categoryCount) * 1000) / 10;
+
+  const summaryLabel = selectedClassFilter === "all" ? "في جميع الصفوف" : `في الصف ${visibleGrades[0]?.name ?? ""}`;
+
+  const summaryUnavailable = loadingStudents || Boolean(studentsError);
   return (
     <div className="teacher-dashboard-container" dir="rtl">
       {/* 1. الشريط العلوي */}
-      <Header />
-
+      <Header teacher={teacher} />
       {/* 2. قسم بطاقات الإحصائيات (Stat Cards) */}
       <div className="td-stats-grid">
         {/* بطاقة 1: إجمالي الطلاب */}
         <div className="td-stat-card td-blue-card">
           <div className="td-card-header">
             <span className="td-card-title">إجمالي الطلاب</span>
-            <div className="td-card-icon td-blue-icon"><FaUsers /></div>
+            <div className="td-card-icon td-blue-icon">
+              <FaUsers />
+            </div>
           </div>
-          <div className="td-card-value">32</div>
-          <div className="td-card-subtitle">في 3 صفوف &gt;</div>
+          <div className="td-card-value">{summaryUnavailable ? "—" : selectedTotals.studentCount}</div>
+          <div className="td-card-subtitle">{summaryLabel}</div>
         </div>
 
         {/* بطاقة 2: الأنشطة المكتملة */}
         <div className="td-stat-card td-green-card">
           <div className="td-card-header">
             <span className="td-card-title">الأنشطة المكتملة</span>
-            <div className="td-card-icon td-green-icon"><FaCheckCircle /></div>
+            <div className="td-card-icon td-green-icon">
+              <FaCheckCircle />
+            </div>
           </div>
-          <div className="td-card-value">76%</div>
-          <div className="td-card-subtitle">من إجمالي الأنشطة</div>
+          <div className="td-card-value">{summaryUnavailable ? "—" : `${summaryCompletion}%`}</div>
+          <div className="td-card-subtitle">من إجمالي الأنشطة — {summaryLabel}</div>
         </div>
 
         {/* بطاقة 3: متوسط الدرجات */}
         <div className="td-stat-card td-lightblue-card">
           <div className="td-card-header">
             <span className="td-card-title">متوسط الدرجات</span>
-            <div className="td-card-icon td-lightblue-icon"><FaChartLine /></div>
+            <div className="td-card-icon td-lightblue-icon">
+              <FaChartLine />
+            </div>
           </div>
-          <div className="td-card-value">84%</div>
-          <div className="td-card-subtitle">في جميع الصفوف</div>
+          <div className="td-card-value">{summaryUnavailable ? "—" : `${summaryAverageScore}%`}</div>
+          <div className="td-card-subtitle">{summaryLabel}</div>
         </div>
 
         {/* بطاقة 4: طلاب يحتاجون متابعة */}
         <div className="td-stat-card td-orange-card">
           <div className="td-card-header">
             <span className="td-card-title">طلاب يحتاجون متابعة</span>
-            <div className="td-card-icon td-orange-icon"><FaExclamationTriangle /></div>
+            <div className="td-card-icon td-orange-icon">
+              <FaExclamationTriangle />
+            </div>
           </div>
-          <div className="td-card-value">4</div>
-          <div className="td-card-subtitle">يحتاجون إلى دعم إضافي &gt;</div>
+          <div className="td-card-value">{summaryUnavailable ? "—" : selectedTotals.needsHelpCount}</div>
+          <div className="td-card-subtitle">يحتاجون إلى دعم إضافي — {summaryLabel}</div>
         </div>
       </div>
 
       {/* 3. القسم الأوسط: تقدم الصف + آخر الأنشطة */}
       <div className="td-main-grid">
-        
         {/* كرت تقدم الصف (الرسم البياني) */}
         <div className="td-card td-chart-card">
           <div className="td-card-header-flex">
@@ -79,11 +204,7 @@ export default function TeacherDashboard() {
               <FaChartLine className="td-section-icon" />
               <h3>تقدّم الصف</h3>
             </div>
-            <select 
-              className="td-dropdown"
-              value={selectedClassFilter}
-              onChange={(e) => setSelectedClassFilter(e.target.value)}
-            >
+            <select className="td-dropdown" value={selectedClassFilter} onChange={(e) => setSelectedClassFilter(e.target.value)}>
               <option value="all">جميع الصفوف</option>
               <option value="7">الصف السابع</option>
               <option value="8">الصف الثامن</option>
@@ -101,44 +222,27 @@ export default function TeacherDashboard() {
               <span>0%</span>
             </div>
             <div className="td-chart-bars-area">
-              {/* مجموعة الصف السادس */}
-              <div className="td-bar-group">
-                <div className="td-bars-pair">
-                  <div className="td-bar blue-bar" style={{ height: '68%' }}>
-                    <span className="td-bar-tooltip">68%</span>
-                  </div>
-                  <div className="td-bar green-bar" style={{ height: '76%' }}>
-                    <span className="td-bar-tooltip">76%</span>
-                  </div>
-                </div>
-                <span className="td-bar-label">الصف السادس</span>
-              </div>
+              {loadingStudents ? (
+                <p role="status">جارٍ تحميل البيانات...</p>
+              ) : studentsError ? (
+                <p role="alert">{studentsError}</p>
+              ) : (
+                visibleGrades.map((grade) => (
+                  <div className="td-bar-group" key={grade.id}>
+                    <div className="td-bars-pair">
+                      <div className="td-bar blue-bar" style={{ height: `${grade.completion}%` }}>
+                        <span className="td-bar-tooltip">{grade.completion}%</span>
+                      </div>
 
-              {/* مجموعة الصف السابع */}
-              <div className="td-bar-group">
-                <div className="td-bars-pair">
-                  <div className="td-bar blue-bar" style={{ height: '72%' }}>
-                    <span className="td-bar-tooltip">72%</span>
-                  </div>
-                  <div className="td-bar green-bar" style={{ height: '85%' }}>
-                    <span className="td-bar-tooltip">85%</span>
-                  </div>
-                </div>
-                <span className="td-bar-label">الصف السابع</span>
-              </div>
+                      <div className="td-bar green-bar" style={{ height: `${grade.averageScore}%` }}>
+                        <span className="td-bar-tooltip">{grade.averageScore}%</span>
+                      </div>
+                    </div>
 
-              {/* مجموعة الصف الثامن */}
-              <div className="td-bar-group">
-                <div className="td-bars-pair">
-                  <div className="td-bar blue-bar" style={{ height: '60%' }}>
-                    <span className="td-bar-tooltip">60%</span>
+                    <span className="td-bar-label">الصف {grade.name}</span>
                   </div>
-                  <div className="td-bar green-bar" style={{ height: '71%' }}>
-                    <span className="td-bar-tooltip">71%</span>
-                  </div>
-                </div>
-                <span className="td-bar-label">الصف الثامن</span>
-              </div>
+                ))
+              )}
             </div>
           </div>
 
@@ -148,9 +252,10 @@ export default function TeacherDashboard() {
               <span className="legend-dot green-dot"></span>
               <span>متوسط الدرجات</span>
             </div>
+
             <div className="legend-item">
               <span className="legend-dot blue-dot"></span>
-              <span>إكمال الأنشطة</span>
+              <span>الأنشطة المكتملة</span>
             </div>
           </div>
         </div>
@@ -166,7 +271,9 @@ export default function TeacherDashboard() {
 
           <div className="td-activities-list">
             <div className="td-activity-item">
-              <div className="activity-badge green-badge"><FaCheckCircle /></div>
+              <div className="activity-badge green-badge">
+                <FaCheckCircle />
+              </div>
               <div className="activity-info">
                 <div className="activity-top">
                   <span className="activity-class">الصف التاسع</span>
@@ -177,7 +284,9 @@ export default function TeacherDashboard() {
             </div>
 
             <div className="td-activity-item">
-              <div className="activity-badge blue-badge"><FaBook /></div>
+              <div className="activity-badge blue-badge">
+                <FaBook />
+              </div>
               <div className="activity-info">
                 <div className="activity-top">
                   <span className="activity-class">الصف الثامن</span>
@@ -188,7 +297,9 @@ export default function TeacherDashboard() {
             </div>
 
             <div className="td-activity-item">
-              <div className="activity-badge orange-badge"><FaUsers /></div>
+              <div className="activity-badge orange-badge">
+                <FaUsers />
+              </div>
               <div className="activity-info">
                 <div className="activity-top">
                   <span className="activity-class">الصف السابع</span>
@@ -199,7 +310,9 @@ export default function TeacherDashboard() {
             </div>
 
             <div className="td-activity-item">
-              <div className="activity-badge purple-badge"><FaChartLine /></div>
+              <div className="activity-badge purple-badge">
+                <FaChartLine />
+              </div>
               <div className="activity-info">
                 <div className="activity-top">
                   <span className="activity-class">الصف التاسع ج</span>
@@ -210,7 +323,9 @@ export default function TeacherDashboard() {
             </div>
 
             <div className="td-activity-item">
-              <div className="activity-badge green-badge"><FaCheckCircle /></div>
+              <div className="activity-badge green-badge">
+                <FaCheckCircle />
+              </div>
               <div className="activity-info">
                 <div className="activity-top">
                   <span className="activity-class">الصف الثامن</span>
@@ -221,12 +336,10 @@ export default function TeacherDashboard() {
             </div>
           </div>
         </div>
-
       </div>
 
       {/* 4. القسم السفلي: مواضيع التعلم النشطة + إجراءات سريعة */}
       <div className="td-bottom-grid">
-        
         {/* مواضيع التعلم النشطة */}
         <div className="td-card td-topics-card">
           <div className="td-card-header-flex">
@@ -274,12 +387,14 @@ export default function TeacherDashboard() {
 
           <div className="td-quick-actions">
             {/* زر إنشاء نشاط */}
-            <button 
+            <button
               className="action-btn blue-action"
-              onClick={() => navigate('/teacher/activities')} // التوجيه لصفحة الأنشطة
+              onClick={() => navigate("/teacher/activities")} // التوجيه لصفحة الأنشطة
             >
               <div className="action-left">
-                <div className="action-icon-wrapper"><FaPlus /></div>
+                <div className="action-icon-wrapper">
+                  <FaPlus />
+                </div>
                 <div className="action-text">
                   <strong>إنشاء نشاط</strong>
                   <span>أضف نشاطاً جديداً لصفوفك</span>
@@ -289,12 +404,14 @@ export default function TeacherDashboard() {
             </button>
 
             {/* زر إضافة صف */}
-            <button 
+            <button
               className="action-btn green-action"
-              onClick={() => navigate('/teacher/class')} // التوجيه لصفحة الصفوف
+              onClick={() => navigate("/teacher/class")} // التوجيه لصفحة الصفوف
             >
               <div className="action-left">
-                <div className="action-icon-wrapper"><FaUserPlus /></div>
+                <div className="action-icon-wrapper">
+                  <FaUserPlus />
+                </div>
                 <div className="action-text">
                   <strong>إضافة صف</strong>
                   <span>أنشئ صفاً جديداً</span>
@@ -304,7 +421,6 @@ export default function TeacherDashboard() {
             </button>
           </div>
         </div>
-
       </div>
     </div>
   );
