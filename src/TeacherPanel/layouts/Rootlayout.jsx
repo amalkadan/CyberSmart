@@ -21,8 +21,8 @@ export default function RootLayout() {
   // دالة تسجيل الخروج
 async function handleLogout() {
     try {
-      const response = await fetch("http://localhost:4000/auth/logout", {
-        method: "POST",
+      const BackEndPort = import.meta.env.VITE_PORT
+      const response = await fetch(`http://localhost:${BackEndPort}/auth/logout`, {        method: "POST",
         credentials: "include",
       });
 

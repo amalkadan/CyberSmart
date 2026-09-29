@@ -2,7 +2,8 @@ import { redirect } from "react-router-dom";
 
 export const requireRole = (allowedRole) => {
   return async ({ request }) => {
-    const response = await fetch("http://localhost:4000/auth/me", {
+      const BackEndPort = import.meta.env.VITE_PORT
+      const response = await fetch(`http://localhost:${BackEndPort}/auth/me`, {
       credentials: "include",
       cache: "no-store",
       signal: request.signal,

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import {
@@ -259,10 +259,57 @@ function StudentDashboard() {
   const [activePage, setActivePage] = useState("home");
   const [searchText, setSearchText] = useState("");
 
+  const [student, setStudent] = useState(null);
+  const [loadingStudent, setLoadingStudent] = useState(true);
+  const [studentError, setStudentError] = useState("");
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    async function fetchStudent() {
+      try {
+        const port = import.meta.env.VITE_PORT;
+
+        const response = await fetch(`http://localhost:${port}/students/me`, {
+          credentials: "include",
+          cache: "no-store",
+          signal: controller.signal,
+        });
+
+        if (response.status === 401) {
+          navigate("/", { replace: true });
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error("تعذر تحميل بيانات الطالب");
+        }
+
+        const data = await response.json();
+
+        if (!controller.signal.aborted) {
+          setStudent(data.student);
+        }
+      } catch {
+        if (!controller.signal.aborted) {
+          setStudentError("تعذر تحميل بيانات الطالب، أعد المحاولة");
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoadingStudent(false);
+        }
+      }
+    }
+
+    fetchStudent();
+
+    return () => controller.abort();
+  }, [navigate]);
 
   async function handleLogout() {
     try {
-      const response = await fetch("http://localhost:4000/auth/logout", {
+      const BackEndPort = import.meta.env.VITE_PORT;
+      const response = await fetch(`http://localhost:${BackEndPort}/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
@@ -362,10 +409,14 @@ function StudentDashboard() {
               </div>
 
               <div className="student-welcome-text">
-                <h1>مرحبًا، سارة!</h1>
+                <h1>{student?.user?.name ? `مرحبًا، ${student.user.name}!` : "مرحبًا!"}</h1>
+
+                {loadingStudent && <p role="status">جارٍ تحميل بياناتك...</p>}
+
+                {studentError && <p role="alert">{studentError}</p>}
 
                 <p>
-                  أكملتِ <strong>٦</strong> من <strong>١٠</strong> أنشطة
+                  أكملتِ <strong>6</strong> من <strong>10</strong> أنشطة
                 </p>
 
                 <span className="student-progress-message">
@@ -378,7 +429,7 @@ function StudentDashboard() {
                     <span />
                   </div>
 
-                  <strong>٦ / ١٠</strong>
+                  <strong>6 / 10</strong>
                 </div>
               </div>
 
@@ -447,7 +498,7 @@ function StudentDashboard() {
                     <Star size={53} fill="currentColor" />
                   </div>
 
-                  <strong>٨٥٠ نقطة</strong>
+                  <strong>{student ? `${student.points} نقطة` : "—"}</strong>
                 </div>
               </article>
 

@@ -51,6 +51,7 @@ const router = createBrowserRouter([
         errorElement: <p dir="rtl">تعذر الاتصال بالخادم. تأكد من تشغيله ثم أعد تحميل الصفحة.</p>,
       },
       {
+        id: "teacher",
         path: "teacher",
         loader: requireRole("TEACHER"),
         shouldRevalidate: () => true,

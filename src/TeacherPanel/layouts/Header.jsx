@@ -1,12 +1,14 @@
-import React from 'react';
-import { FaBell, FaUserCircle } from 'react-icons/fa';
+import { FaBell, FaUserCircle } from "react-icons/fa";
 
-export default function Header() {
+export default function Header({ teacher }) {
   return (
     <header className="header-container">
       {/* جهة اليمين: الترحيب بالمعلمة */}
       <div className="welcome-section">
-        <h2>مرحباً، أستاذة أمل 🌅</h2>
+        <h2>مرحباً، {teacher?.name ?? "بك"} 🌅</h2>
+
+        {<p dir="rtl">{teacher.email}</p>}
+
         <p>معاً نبني جيلاً أكثر أماناً في العالم الرقمي</p>
       </div>
 
