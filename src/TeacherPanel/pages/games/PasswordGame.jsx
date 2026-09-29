@@ -1,134 +1,397 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaArrowRight, FaLightbulb, FaChevronRight, FaChevronLeft } from 'react-icons/fa';
-import '/src/TeacherPanel/style/PasswordGame.css';
+import axios from 'axios';
+
+import "/src/TeacherPanel/style/PhishingGame.css";
+import heroMascot from "/src/TeacherPanel/img/hero-shield.jpg";
+import gameBg from "/src/TeacherPanel/img/game-bg.jpg";
 
 export default function PasswordGame({ returnPath = '/teacher/activities' }) {
   const navigate = useNavigate();
 
-  // نموذج للأسئلة (يمكنك تعديلها وإضافة المزيد لاحقاً)
-  const questions = [
-    {
-      id: 1,
-      question: "ما فائدة مولّد كلمات المرور؟",
-      options: [
-        { key: 'A', text: "إلغاء قفل الشاشة" },
-        { key: 'B', text: "إنشاء كلمات عشوائية قوية" },
-        { key: 'C', text: "مشاركة الحساب مع الآخرين" },
-        { key: 'D', text: "استخدام اسمك تلقائياً" }
-      ],
-      correctAnswer: 'B'
-    },
-    {
-      id: 2,
-      question: "أي من كلمات المرور التالية تعتبر الأقوى والأكثر أماناً؟",
-      options: [
-        { key: 'A', text: "12345678" },
-        { key: 'B', text: "password2024" },
-        { key: 'C', text: "P@ss$3c3u!20" },
-        { key: 'D', text: "ahmed123" }
-      ],
-      correctAnswer: 'C'
-    }
-  ];
-
+  const [questions, setQuestions] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState({});
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [score, setScore] = useState(0);
+  const [pointChange, setPointChange] = useState(0);
 
-  const currentQuestion = questions[currentIndex];
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const response = await axios.get(
+          'http://localhost:4000/questions'
+        );
 
-  const handleSelectOption = (optionKey) => {
-    setSelectedAnswers({
-      ...selectedAnswers,
-      [currentIndex]: optionKey
-    });
+        const rawData = Array.isArray(response.data)
+          ? response.data
+          : (response.data.questions || []);
+
+        const filtered = rawData.filter(
+          q => q.category && q.category.includes("كلمات المرور")
+        );
+
+        const formattedQuestions = filtered.map((item, index) => {
+          const rawOptions =
+            item.answers ||
+            item.options ||
+            item.choices ||
+            [];
+
+          const correctIdx = Number(item.correctAnswerIndex);
+
+          return {
+            id: item._id || index + 1,
+
+            questionText:
+              item.text ||
+              item.questionText ||
+              item.question ||
+              '',
+
+            options: rawOptions,
+
+            correctAnswerIndex: correctIdx,
+
+            hints: item.hints || [
+              {
+                text: 'استخدم كلمة مرور قوية وفريدة لكل حساب',
+                icon: '🔐'
+              },
+              {
+                text: 'لا تشارك كلمات المرور أو رموز التحقق مع الآخرين',
+                icon: '🛡️'
+              }
+            ],
+
+            explanation:
+              item.explanation ||
+              'احرص على استخدام كلمات مرور قوية وفريدة وحافظ عليها بشكل آمن.'
+          };
+        });
+
+        setQuestions(formattedQuestions);
+
+      } catch (error) {
+        console.error(
+          "خطأ في جلب بيانات أسئلة كلمات المرور:",
+          error
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuestions();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="game-status-message">
+        جاري تحميل الأسئلة...
+      </div>
+    );
+  }
+
+  if (questions.length === 0) {
+    return (
+      <div className="game-status-message">
+        لا توجد أسئلة متاحة حالياً.
+      </div>
+    );
+  }
+
+  const currentQ = questions[currentIndex];
+  const totalQuestions = questions.length;
+
+  const handleAnswerSelect = (optionIndex) => {
+    if (selectedAnswer !== null) return;
+
+    const isCorrect =
+      optionIndex === currentQ.correctAnswerIndex;
+
+    if (isCorrect) {
+      setSelectedAnswer('correct');
+      setPointChange(20);
+      setScore(prev => prev + 20);
+    } else {
+      setSelectedAnswer('wrong');
+      setPointChange(-10);
+      setScore(prev => Math.max(0, prev - 10));
+    }
   };
 
   const handleNext = () => {
-    if (currentIndex < questions.length - 1) {
+    setSelectedAnswer(null);
+
+    if (currentIndex + 1 < totalQuestions) {
       setCurrentIndex(currentIndex + 1);
+    } else {
+      alert(
+        `انتهت اللعبة! مجموع نقاطك النهائي: ${score} نقطة ⭐️`
+      );
+
+      navigate(returnPath);
     }
   };
 
-  const handlePrev = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-    }
-  };
+  const optionLabels = ['A', 'B', 'C', 'D'];
 
   return (
-    <div className="pw-game-container" dir="rtl">
-      {/* 1. الهيدر وزر العودة */}
-      <div className="pw-game-header">
-        <button className="pw-back-btn" onClick={() => navigate(returnPath)}>
-          <FaArrowRight /> العودة للأنشطة
+    <div
+      className="phishing-game-container"
+      dir="rtl"
+      style={{
+        backgroundImage: `
+          linear-gradient(
+            rgba(47, 54, 70, 0.85),
+            rgba(4, 9, 20, 0.92)
+          ),
+          url(${gameBg})
+        `
+      }}
+    >
+
+      {/* الهيدر */}
+      <header className="game-top-header">
+
+        <button
+          className="game-back-btn"
+          onClick={() => navigate(returnPath)}
+        >
+          ← العودة للأنشطة
         </button>
-      </div>
 
-      {/* 2. عنوان اللعبة الرئيسي */}
-      <div className="pw-game-title-section">
-        <h2>{currentIndex + 1}. اختبر كلمة المرور</h2>
-      </div>
+        <div className="header-center-title">
 
-      {/* 3. كرت السؤال الرئيسي الداكن */}
-      <div className="pw-quiz-card">
-        {/* أزرار التلميح والتنقل العلوية */}
-        <div className="pw-card-top-bar">
-          <button className="pw-hint-btn" title="تلميح">
-            <FaLightbulb />
-          </button>
-          
-          <div className="pw-nav-arrows">
-            <button 
-              className="pw-arrow-btn" 
-              onClick={handleNext} 
-              disabled={currentIndex === questions.length - 1}
-            >
-              <FaChevronRight />
-            </button>
-            <button 
-              className="pw-arrow-btn" 
-              onClick={handlePrev} 
-              disabled={currentIndex === 0}
-            >
-              <FaChevronLeft />
-            </button>
+          <h1 className="game-main-title">
+            <span>🔐</span> كلمة المرور الآمنة
+          </h1>
+
+          <div className="progress-bar-wrapper">
+
+            <div className="progress-line"></div>
+
+            {questions.map((_, idx) => (
+              <div
+                key={idx}
+                className={`
+                  progress-step-dot
+                  ${idx === currentIndex ? 'active' : ''}
+                  ${idx < currentIndex ? 'completed' : ''}
+                `}
+              />
+            ))}
+
           </div>
+
+          <span className="step-counter-text">
+            السؤال {currentIndex + 1} من {totalQuestions}
+          </span>
+
         </div>
 
-        {/* نص السؤال */}
-        <div className="pw-question-text">
-          <h3>{currentQuestion.question}</h3>
-        </div>
+      </header>
 
-        {/* قائمة الخيارات الأربعة */}
-        <div className="pw-options-list">
-          {currentQuestion.options.map((opt) => {
-            const isSelected = selectedAnswers[currentIndex] === opt.key;
-            return (
-              <div 
-                key={opt.key}
-                className={`pw-option-item ${isSelected ? 'selected' : ''}`}
-                onClick={() => handleSelectOption(opt.key)}
-              >
-                <span className="pw-option-text">{opt.text}</span>
-                <div className="pw-option-badge">{opt.key}</div>
+
+      {/* السؤال */}
+      {!selectedAnswer ? (
+
+        <main className="game-center-content">
+
+          <div className="question-card-wrapper">
+
+            <div className="mascot-side">
+
+              <div className="mascot-frame">
+
+                <img
+                  src={heroMascot}
+                  alt="الحارس الذكي"
+                  className="mascot-img-glow"
+                />
+
+                <span className="question-mark-badge">
+                  ؟
+                </span>
+
               </div>
-            );
-          })}
-        </div>
 
-        {/* زر التالي السفلي */}
-        <div className="pw-card-footer">
-          <button 
-            className="pw-next-btn" 
-            onClick={handleNext}
-            disabled={currentIndex === questions.length - 1}
-          >
-            التالي
-          </button>
-        </div>
-      </div>
+            </div>
+
+
+            <div className="email-card-box">
+
+              <p className="email-text-message">
+                {currentQ.questionText}
+              </p>
+
+            </div>
+
+          </div>
+
+
+          {/* الخيارات */}
+          <div className="options-list-container">
+
+            {currentQ.options.map((optionText, idx) => (
+
+              <button
+                key={idx}
+                className="option-button"
+                onClick={() => handleAnswerSelect(idx)}
+              >
+
+                <span className="option-text">
+                  {optionText}
+                </span>
+
+                <span className="option-badge">
+                  {optionLabels[idx] || idx + 1}
+                </span>
+
+              </button>
+
+            ))}
+
+          </div>
+
+        </main>
+
+      ) : (
+
+        /* نتيجة الإجابة */
+        <section
+          className={`result-overlay-screen ${selectedAnswer}`}
+        >
+
+          <div className="result-card-content">
+
+            <div className="result-banner">
+
+              <div className="score-badge-box">
+
+                <span className="star-icon">
+                  ⭐
+                </span>
+
+                <span className="score-label">
+                  النتيجة:
+                </span>
+
+                <span className="score-value">
+                  {score} نقطة
+                </span>
+
+              </div>
+
+
+              <span className="result-status-icon">
+
+                {selectedAnswer === 'correct'
+                  ? '🛡️'
+                  : '⚠️'}
+
+              </span>
+
+
+              <h2 className="result-title">
+
+                {selectedAnswer === 'correct'
+                  ? 'إجابة صحيحة!'
+                  : 'إجابة خاطئة!'}
+
+              </h2>
+
+
+              <div
+                className={`points-pill ${selectedAnswer}`}
+              >
+
+                {pointChange > 0
+                  ? `+${pointChange} نقطة 🎉`
+                  : `${pointChange} نقاط ❌`}
+
+              </div>
+
+            </div>
+
+
+            <p className="result-subtitle">
+
+              الإجابة الصحيحة هي:
+
+              <strong>
+                "{currentQ.options[currentQ.correctAnswerIndex]}"
+              </strong>
+
+            </p>
+
+
+            <div className="result-reasons-grid">
+
+              {currentQ.hints.map((hint, i) => (
+
+                <div
+                  key={i}
+                  className="reason-card"
+                >
+
+                  <span className="reason-icon">
+                    {hint.icon}
+                  </span>
+
+                  <span className="reason-text">
+                    {hint.text}
+                  </span>
+
+                </div>
+
+              ))}
+
+            </div>
+
+
+            <div className="result-tip-box">
+
+              <span>💡</span>
+
+              {currentQ.explanation}
+
+            </div>
+
+
+            <button
+              className="next-question-btn"
+              onClick={handleNext}
+            >
+              السؤال التالي ❮
+            </button>
+
+          </div>
+
+        </section>
+
+      )}
+
+
+      {/* أسفل اللعبة */}
+      {!selectedAnswer && (
+
+        <footer className="game-footer-controls">
+
+          <div className="think-bubble-pill">
+
+            <span>💡</span>
+
+            اختر كلمة المرور أو التصرف الآمن من الخيارات أعلاه
+
+          </div>
+
+        </footer>
+
+      )}
+
     </div>
   );
 }
