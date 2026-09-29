@@ -2,8 +2,105 @@
   padding: 24px;
   min-height: 100vh;
   box-sizing: border-box;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
   color: #ffffff;
+}
+
+.activities-container .activity-assignment-card {
+  min-width: 0;
+  align-self: start;
+  background: #0b1528;
+  border: 1px solid #1e293b;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.activities-container .activity-preview {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+}
+
+.activities-container .activity-preview:hover {
+  transform: none;
+}
+
+.activities-container .activity-preview:focus-visible {
+  outline: 3px solid #38bdf8;
+  outline-offset: -3px;
+}
+
+.activities-container .activity-assignments {
+  padding: 20px;
+}
+
+.activities-container .activity-assignments h3 {
+  margin: 0 0 16px;
+  color: #e2e8f0;
+  font-size: 15px;
+}
+
+.activities-container .assignment-list {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.activities-container .assignment-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid #243247;
+  border-radius: 12px;
+  background: #101d30;
+}
+
+.activities-container .assignment-dot {
+  flex: 0 0 10px;
+  height: 10px;
+  margin-top: 7px;
+  border-radius: 50%;
+}
+
+.activities-container .assignment-dot.upcoming {
+  background: #fb923c;
+}
+
+.activities-container .assignment-dot.past {
+  background: #94a3b8;
+}
+
+.activities-container .assignment-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  color: #cbd5e1;
+  font-size: 13px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.activities-container .assignment-details strong {
+  color: #f8fafc;
+  font-size: 14px;
+}
+
+.activities-container .assignment-status,
+.activities-container .assignment-empty {
+  color: #94a3b8;
+  font-size: 12px;
 }
 
 /* 1. البنر العلوي */
@@ -82,7 +179,9 @@
   border-radius: 20px;
   overflow: hidden;
   cursor: pointer;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
 }
 
@@ -284,7 +383,9 @@
   align-items: center;
   justify-content: center;
   gap: 8px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .submit-assign-btn:hover {

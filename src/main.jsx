@@ -1,9 +1,9 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 
-import App, { LoginPage } from './App.jsx'; 
-import StudentDashboard from './StudentPanel/StudentDashboard.jsx';
+import App, { LoginPage } from "./App.jsx";
+import StudentDashboard from "./StudentPanel/StudentDashboard.jsx";
 
 import Rootlayout from "./TeacherPanel/layouts/Rootlayout.jsx";
 import TeacherDashboard from "./TeacherPanel/pages/TeacherDashboard.jsx";
@@ -16,17 +16,18 @@ import TeacherMessages from "./TeacherPanel/pages/TeacherMessages.jsx";
 import TeacherSettings from "./TeacherPanel/pages/TeacherSetting.jsx";
 
 // 1. استيراد صفحات الألعاب (تأكد من إنشاء المجلد والملفات)
-import PhishingGame from './TeacherPanel/pages/games/PhishingGame.jsx';
-import PasswordGame from './TeacherPanel/pages/games/PasswordGame.jsx';
-import DecisionGame from './TeacherPanel/pages/games/DecisionGame.jsx';
-import CyberMonopolyGame from './TeacherPanel/pages/games/CyberMonopolyGame.jsx';
-import UnoSyberGame from './TeacherPanel/pages/games/UnoSyberGame.jsx';
+import PhishingGame from "./TeacherPanel/pages/games/PhishingGame.jsx";
+import PasswordGame from "./TeacherPanel/pages/games/PasswordGame.jsx";
+import DecisionGame from "./TeacherPanel/pages/games/DecisionGame.jsx";
+import CyberMonopolyGame from "./TeacherPanel/pages/games/CyberMonopolyGame.jsx";
+import UnoSyberGame from "./TeacherPanel/pages/games/UnoSyberGame.jsx";
 
-import './index.css';
+import "./index.css";
 import { requireRole } from "./auth/requireRole";
 
 import "./index.css";
 
+import { Toaster } from "sonner";
 function handlePageRestore(event) {
   if (event.persisted) {
     window.location.reload();
@@ -49,7 +50,7 @@ const router = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <LoginPage />, 
+        element: <LoginPage />,
       },
       {
         path: "student",
@@ -68,6 +69,7 @@ const router = createBrowserRouter([
       },
       {
         path: "teacher",
+        id: "teacher",
         loader: requireRole("TEACHER"),
         shouldRevalidate: () => true,
         element: <Rootlayout />,
@@ -77,7 +79,7 @@ const router = createBrowserRouter([
           { path: "class", element: <TeacherClass /> },
           { path: "student-status", element: <TeacherStudentStatus /> },
           { path: "activities", element: <TeacherActivities /> },
-          
+
           // 2. إضافة مسارات الألعاب هنا حتى تفتح بنفس الهيكل وبجانب القائمة الجانبية
           { path: "activities/phishing", element: <PhishingGame /> },
           { path: "activities/password", element: <PasswordGame /> },
@@ -96,5 +98,6 @@ const router = createBrowserRouter([
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <RouterProvider router={router} />
+    <Toaster richColors closeButton position="top-center" dir="rtl" />
   </StrictMode>,
 );
