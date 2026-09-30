@@ -1,7 +1,8 @@
 /* Container الأساسي */
 .teacher-dashboard-container {
   padding: 20px;
-  background-color: #f8fafc;
+  /* background-color: #f8fafc; */
+  background:white;
   min-height: 100vh;
   box-sizing: border-box;
   font-family: system-ui, -apple-system, sans-serif;
@@ -17,7 +18,7 @@
 }
 
 .td-stat-card {
-  background: #ffffff;
+  background: #EDF9FF;
   padding: 18px 20px;
   border-radius: 16px;
   border: 1px solid #f1f5f9;
@@ -88,7 +89,7 @@
 
 /* الكروت العامة */
 .td-card {
-  background: #ffffff;
+  background: #EDF9FF;
   border-radius: 20px;
   border: 1px solid #f1f5f9;
   padding: 20px 24px;
