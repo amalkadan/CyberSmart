@@ -1,12 +1,8 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+import UnoCyberApp from "../../../UNO-Cyber/UnoCyberApp.jsx";
 
-export default function UnoSyberGame({ returnPath = '/teacher/activities' }) {
+export default function UnoSyberGame({ returnPath = "/teacher/activities" }) {
   const navigate = useNavigate();
 
-  return (
-    <div style={{ padding: '20px' }}>
-      <button onClick={() => navigate(returnPath)}>← العودة للأنشطة</button>
-      <h2>ال_UNO السيبراني</h2>
-    </div>
-  );
+  return <UnoCyberApp onExit={() => navigate(returnPath)} />;
 }
