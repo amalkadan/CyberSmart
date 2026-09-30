@@ -54,6 +54,7 @@ const router = createBrowserRouter([
       },
       {
         path: "student",
+        id: "student",
         loader: requireRole("STUDENT"),
         shouldRevalidate: () => true,
         element: <Outlet />,

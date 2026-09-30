@@ -1,12 +1,16 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { useState, useEffect, useRef } from "react";
+import { useNavigate, useRouteLoaderData } from "react-router-dom";
+import axios from "axios";
 import "/src/TeacherPanel/style/PhishingGame.css";
 import heroMascot from "/src/TeacherPanel/img/hero-shield.jpg";
 import gameBg from "/src/TeacherPanel/img/game-bg.jpg";
+import { toast } from "sonner";
 
-export default function PhishingGame({ returnPath = '/teacher/activities' }) {
+export default function PhishingGame({ returnPath = "/teacher/activities" }) {
   const navigate = useNavigate();
+
+  const activityId = "phishing";
+
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -14,16 +18,18 @@ export default function PhishingGame({ returnPath = '/teacher/activities' }) {
   const [score, setScore] = useState(0);
   const [pointChange, setPointChange] = useState(0);
 
+  const studentUser = useRouteLoaderData("student");
+  const [correctAnswers, setCorrectAnswers] = useState(0);
+  const [isSaving, setIsSaving] = useState(false);
+  const savingRef = useRef(false);
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await axios.get('http://localhost:4000/questions');
+        const response = await axios.get("http://localhost:4000/questions");
         // console.log("ALL QUESTIONS:", response.data);
-        const rawData = Array.isArray(response.data) 
-          ? response.data 
-          : (response.data.questions || []);
+        const rawData = Array.isArray(response.data) ? response.data : response.data.questions || [];
 
-        let filtered = rawData.filter(q => q.category && q.category.includes("تصيد"));
+        let filtered = rawData.filter((q) => q.category && q.category.includes("تصيد"));
         if (filtered.length === 0) {
           filtered = rawData;
         }
@@ -34,14 +40,14 @@ export default function PhishingGame({ returnPath = '/teacher/activities' }) {
 
           return {
             id: item._id || index + 1,
-            questionText: item.text || item.questionText || item.question || '',
+            questionText: item.text || item.questionText || item.question || "",
             options: rawOptions,
             correctAnswerIndex: correctIdx,
             hints: item.hints || [
-              { text: 'تحليل محتوى الرسالة والطلبات الحساسة', icon: '🔍' },
-              { text: 'التحقق من المصدر والعناوين', icon: '🛡️️' }
+              { text: "تحليل محتوى الرسالة والطلبات الحساسة", icon: "🔍" },
+              { text: "التحقق من المصدر والعناوين", icon: "🛡️️" },
             ],
-            explanation: item.explanation || 'تأكد دائمًا من الإجابة بدقة قبل الاختيار.'
+            explanation: item.explanation || "تأكد دائمًا من الإجابة بدقة قبل الاختيار.",
           };
         });
 
@@ -71,38 +77,87 @@ export default function PhishingGame({ returnPath = '/teacher/activities' }) {
     if (selectedAnswer !== null) return;
 
     const isCorrect = optionIndex === currentQ.correctAnswerIndex;
-    
+
     if (isCorrect) {
-      setSelectedAnswer('correct');
+      setSelectedAnswer("correct");
       setPointChange(20);
-      setScore(prev => prev + 20);
+      setScore((prev) => prev + 20);
+      setCorrectAnswers((previous) => previous + 1);
     } else {
-      setSelectedAnswer('wrong');
+      setSelectedAnswer("wrong");
       setPointChange(-10);
-      setScore(prev => Math.max(0, prev - 10));
+      setScore((prev) => Math.max(0, prev - 10));
     }
   };
+  const handleNext = async () => {
+    if (selectedAnswer === null || savingRef.current) return;
 
-  const handleNext = () => {
-    setSelectedAnswer(null);
     if (currentIndex + 1 < totalQuestions) {
-      setCurrentIndex(currentIndex + 1);
-    } else {
-      alert(`انتهت اللعبة! مجموع نقاطك النهائي: ${score} نقطة ⭐️`);
+      setSelectedAnswer(null);
+      setCurrentIndex((previous) => previous + 1);
+      return;
+    }
+
+    savingRef.current = true;
+    setIsSaving(true);
+
+    try {
+      let savedResult = null;
+
+      if (studentUser?.role === "STUDENT") {
+        const response = await fetch(`http://localhost:4000/students/my-activities/${activityId}/percentage`, {
+          method: "PUT",
+          credentials: "include",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            correctAnswers,
+            score,
+          }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.message || "تعذر حفظ النتيجة");
+        }
+
+        savedResult = data;
+      }
+
+      toast.success("انتهت اللعبة! 🎉", {
+        description:
+          `الإجابات الصحيحة: ${correctAnswers} من ${totalQuestions}` +
+          ` | نقاط الجولة: ${score}` +
+          ` | نسبة هذه الجولة: ${correctAnswers * 5}%` +
+          (savedResult ? ` | إجمالي نقاطك: ${savedResult.points}` : ""),
+        duration: 8000,
+      });
+
       navigate(returnPath);
+    } catch (error) {
+      console.error(error);
+
+      toast.error("تعذر تأكيد حفظ النتيجة", {
+        description: error.message,
+        duration: 6000,
+      });
+
+      savingRef.current = false;
+      setIsSaving(false);
     }
   };
 
-  const optionLabels = ['A', 'B', 'C', 'D'];
+  const optionLabels = ["A", "B", "C", "D"];
 
   return (
-    <div 
-      className="phishing-game-container" 
+    <div
+      className="phishing-game-container"
       dir="rtl"
       style={{
-        backgroundImage: `linear-gradient(rgba(47, 54, 70, 0.85), rgba(4, 9, 20, 0.92)), url(${gameBg})`
-      }}
-    >
+        backgroundImage: `linear-gradient(rgba(47, 54, 70, 0.85), rgba(4, 9, 20, 0.92)), url(${gameBg})`,
+      }}>
       {/* الهيدر العلوي */}
       <header className="game-top-header">
         <button className="game-back-btn" onClick={() => navigate(returnPath)}>
@@ -113,17 +168,19 @@ export default function PhishingGame({ returnPath = '/teacher/activities' }) {
           <h1 className="game-main-title">
             <span>🔍</span> اكتشف التصيّد
           </h1>
-          
+
           <div className="progress-bar-wrapper">
             <div className="progress-line"></div>
             {questions.map((_, idx) => (
-              <div 
-                key={idx} 
-                className={`progress-step-dot ${idx === currentIndex ? 'active' : ''} ${idx < currentIndex ? 'completed' : ''}`}
+              <div
+                key={idx}
+                className={`progress-step-dot ${idx === currentIndex ? "active" : ""} ${idx < currentIndex ? "completed" : ""}`}
               />
             ))}
           </div>
-          <span className="step-counter-text">السؤال {currentIndex + 1} من {totalQuestions}</span>
+          <span className="step-counter-text">
+            السؤال {currentIndex + 1} من {totalQuestions}
+          </span>
         </div>
       </header>
 
@@ -139,23 +196,15 @@ export default function PhishingGame({ returnPath = '/teacher/activities' }) {
             </div>
 
             <div className="email-card-box">
-              <p className="email-text-message">
-                {currentQ.questionText}
-              </p>
+              <p className="email-text-message">{currentQ.questionText}</p>
             </div>
           </div>
 
           <div className="options-list-container">
             {currentQ.options.map((optionText, idx) => (
-              <button
-                key={idx}
-                className="option-button"
-                onClick={() => handleAnswerSelect(idx)}
-              >
+              <button key={idx} className="option-button" onClick={() => handleAnswerSelect(idx)}>
                 <span className="option-text">{optionText}</span>
-                <span className="option-badge">
-                  {optionLabels[idx] || idx + 1}
-                </span>
+                <span className="option-badge">{optionLabels[idx] || idx + 1}</span>
               </button>
             ))}
           </div>
@@ -165,19 +214,14 @@ export default function PhishingGame({ returnPath = '/teacher/activities' }) {
         <section className={`result-overlay-screen ${selectedAnswer}`}>
           <div className="result-card-content">
             <div className="result-banner">
-
               <div className="score-badge-box">
                 <span className="star-icon">⭐</span>
                 <span className="score-label">النتيجة:</span>
                 <span className="score-value">{score} نقطة</span>
               </div>
 
-              <span className="result-status-icon">
-                {selectedAnswer === 'correct' ? '🛡️' : '⚠️'}
-              </span>
-              <h2 className="result-title">
-                {selectedAnswer === 'correct' ? 'إجابة صحيحة!' : 'إجابة خاطئة!'}
-              </h2>
+              <span className="result-status-icon">{selectedAnswer === "correct" ? "🛡️" : "⚠️"}</span>
+              <h2 className="result-title">{selectedAnswer === "correct" ? "إجابة صحيحة!" : "إجابة خاطئة!"}</h2>
               <div className={`points-pill ${selectedAnswer}`}>
                 {pointChange > 0 ? `+${pointChange} نقطة 🎉` : `${pointChange} نقاط ❌`}
               </div>
@@ -200,7 +244,7 @@ export default function PhishingGame({ returnPath = '/teacher/activities' }) {
               <span>💡</span> {currentQ.explanation}
             </div>
 
-            <button className="next-question-btn" onClick={handleNext}>
+            <button className="next-question-btn" onClick={handleNext} disabled={isSaving}>
               السؤال التالي ❮
             </button>
           </div>

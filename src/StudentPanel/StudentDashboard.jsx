@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, useSearchParams, useRouteLoaderData } from "react-router-dom";
 
 import {
   ShieldCheck,
@@ -32,8 +32,7 @@ import monopolyImage from "../TeacherPanel/img/monopoly-card.jpeg";
 import unoImage from "../TeacherPanel/img/Uno_Cyber.jpeg";
 import "./StudentDashboard.css";
 
-
-import lock from '../TeacherPanel/img/lock.png';
+import lock from "../TeacherPanel/img/lock.png";
 
 const menuItems = [
   { id: "home", label: "الرئيسية", icon: Home },
@@ -84,6 +83,7 @@ const pageInformation = {
 const activitiesList = [
   {
     id: "phishing",
+    category: "رسائل التصيد",
     order: 1,
     title: "اكتشف التصيّد",
     desc: "اختبري معرفتك في اكتشاف الرسائل والمواقع الاحتيالية.",
@@ -93,6 +93,7 @@ const activitiesList = [
   },
   {
     id: "password",
+    category: "كلمات المرور",
     order: 2,
     title: "اختبر كلمة المرور",
     desc: "اختاري كلمة المرور الأقوى وتعرفي على طرق حماية حسابك.",
@@ -102,6 +103,7 @@ const activitiesList = [
   },
   {
     id: "decision",
+    category: "الاختبار الامن",
     order: 3,
     title: "اختر القرار الآمن",
     desc: "اختاري التصرف الصحيح في مجموعة من المواقف الرقمية.",
@@ -110,34 +112,154 @@ const activitiesList = [
     path: "/student/games/decision",
   },
   {
-    id: "monopoly",
-    order: 4,
-    title: "لعبة المونوبولي",
-    desc: "لعبة تفاعلية لتعلم مفاهيم الأمان الرقمي.",
-    icon: Gamepad2,
-    image: monopolyImage,
-    path: "/student/games/monopoly",
-  },
-  {
     id: "uno",
-    order: 5,
+    category: "اونو سايبر",
+    order: 4,
     title: "UNO Cyber",
     desc: "لعبة تفاعلية لتعلم مفاهيم الأمان الرقمي.",
     icon: Gamepad2,
     image: unoImage,
     path: "/student/games/uno",
   },
+  {
+    id: "monopoly",
+    category: "مونوبولي",
+    order: 5,
+    title: "لعبة المونوبولي",
+    desc: "لعبة تفاعلية لتعلم مفاهيم الأمان الرقمي.",
+    icon: Gamepad2,
+    image: monopolyImage,
+    path: "/student/games/monopoly",
+  },
 ];
 
-function StudentSectionPage({
-  activePage,
-  onBackHome,
-  activitiesStatus,
-  navigate,
-}) {
-  /*
-    صفحة الأنشطة المعدلة للربط مع تحكم المعلم وتسلسل الطالب
-  */
+function StudentSectionPage({ activePage, onBackHome, categoriesProgress = [], navigate }) {
+  function hasCompletedPrerequisites(activityId) {
+    const activity = activitiesList.find((item) => item.id === activityId);
+
+    if (!activity) return false;
+
+    const categoryIndex = categoriesProgress.findIndex((item) => item.category === activity.category);
+
+    if (categoryIndex === -1) return false;
+
+    const isFinalGame = activityId === "uno" || activityId === "monopoly";
+
+    // UNO and Monopoly require the first three categories.
+    // Other games require the categories before them.
+    const requiredCategories = categoriesProgress.slice(0, isFinalGame ? 3 : categoryIndex);
+
+    if (isFinalGame && requiredCategories.length !== 3) {
+      return false;
+    }
+
+    return requiredCategories.every((item) => item.percentage === 100 && item.finished === true);
+  }
+
+  const prerequisiteMessage = "يجب إكمال الأنشطة السابقة المطلوبة بنسبة 100% أولاً";
+
+  if (activePage === "learning") {
+    const learningSteps = [
+      {
+        title: "رسائل التصيد",
+        description: "ليس كل رابط هدية! تعلّم كيف تكتشف الرسائل المشبوهة وتفحص الروابط قبل الضغط عليها.",
+        icon: Mail,
+      },
+      {
+        title: "كلمات المرور",
+        description: "حسابك يحتاج إلى حارس قوي! اكتشف كيف تختار كلمة مرور يصعب تخمينها وتحافظ على سريتها.",
+        icon: LockKeyhole,
+      },
+      {
+        title: "الاختبار الآمن",
+        description: "ماذا ستفعل في موقف رقمي محيّر؟ فكّر في الخيارات واختر القرار الذي يحميك ويحمي معلوماتك.",
+        icon: ShieldCheck,
+      },
+      {
+        title: "أونو سايبر",
+        description: "حان وقت اللعب والتفكير! اتبع تعليمات اللعبة واستخدم ما تعلّمته عن الأمان الرقمي خلال التحدي.",
+        icon: Gamepad2,
+      },
+      {
+        title: "مونوبولي",
+        description: "واصل المغامرة! اقرأ المواقف داخل اللعبة بعناية وجرّب مهاراتك في اتخاذ قرارات رقمية آمنة.",
+        icon: Trophy,
+      },
+    ];
+
+    return (
+      <section className="student-inner-page learning-guide">
+        <header className="learning-guide-hero">
+          <div>
+            <span className="learning-guide-eyebrow">خمس محطات نحو عالم رقمي أكثر أمانًا</span>
+
+            <h1>رحلتك لتصبح بطل الأمان الرقمي!</h1>
+
+            <p>كل تحدٍّ يعلّمك مهارة جديدة. اقرأ، جرّب، وتعلّم من أخطائك… ثم اجمع شارات إنجازك محطة بعد محطة!</p>
+          </div>
+
+          <ShieldCheck className="learning-guide-hero-icon" aria-hidden="true" />
+        </header>
+
+        <section className="learning-guide-instructions" aria-labelledby="learning-start-title">
+          <h2 id="learning-start-title">كيف تبدأ المغامرة؟</h2>
+
+          <ol>
+            <li>
+              <strong>ابدأ من «واجباتي».</strong> ستجد أول نشاط فتحه المعلم ولم تكمله بعد.
+            </li>
+            <li>
+              <strong>اقرأ التعليمات وخذ وقتك.</strong> الهدف أن تفهم وتتعلم، وليس أن تنتهي بسرعة.
+            </li>
+            <li>
+              <strong>تابع نسبة إنجازك.</strong> تظهر في بطاقة «واجباتي» لتعرف مدى تقدمك في النشاط.
+            </li>
+            <li>
+              <strong>أكمل النشاط لتحصل على شارته.</strong> ستظهر الشارة في «شاراتي» بعد تسجيل اكتمال الفئة.
+            </li>
+            <li>
+              <strong>استعد للمحطة التالية.</strong> انتقل إلى واجبك التالي عندما تنتهي ويكون المعلم قد فتحه.
+            </li>
+          </ol>
+        </section>
+
+        <h2 className="learning-guide-stations-title">اكتشف محطات رحلتك</h2>
+
+        <ol className="learning-guide-stations">
+          {learningSteps.map((step, index) => {
+            const Icon = step.icon;
+
+            return (
+              <li className="learning-guide-station" key={step.title}>
+                <div className="learning-guide-station-icon">
+                  <Icon size={28} aria-hidden="true" />
+                </div>
+
+                <div>
+                  <span className="learning-guide-step">المحطة {index + 1}</span>
+                  <h3>{step.title}</h3>
+                  <p>{step.description}</p>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+
+        <aside className="learning-guide-note">
+          <Lightbulb size={28} aria-hidden="true" />
+          <p>
+            <strong>لا يوجد واجب ظاهر الآن؟</strong> قد تكون أكملت الأنشطة المفتوحة، أو أن المعلم لم يفتح نشاطًا جديدًا بعد. يمكنك العودة
+            إلى دليل الأمان ومراجعة ما تعلّمته!
+          </p>
+        </aside>
+
+        <button className="back-home-button" type="button" onClick={onBackHome}>
+          العودة إلى الرئيسية
+          <Home size={20} />
+        </button>
+      </section>
+    );
+  }
   if (activePage === "activities") {
     return (
       <section className="student-inner-page">
@@ -145,9 +267,7 @@ function StudentSectionPage({
           <div>
             <span className="inner-page-label">الأنشطة التعليمية</span>
             <h1>اختاري النشاط</h1>
-            <p>
-              اختبري معرفتك في حماية الحسابات واتخاذ القرارات الآمنة بالتسلسل.
-            </p>
+            <p>اختبري معرفتك في حماية الحسابات واتخاذ القرارات الآمنة. يفتح المعلم الأنشطة المتاحة لك.</p>
           </div>
 
           <Gamepad2 size={52} />
@@ -156,50 +276,30 @@ function StudentSectionPage({
         <div className="activities-grid">
           {activitiesList.map((act) => {
             const Icon = act.icon;
-            // جلب حالة النشاط المرجعة من السيرفر
-            const serverInfo = activitiesStatus.find(
-              (item) => item.activityId === act.id,
-            );
 
-            // افتراضياً مغلق إلا لو أكد السيرفر أنه مفتوح
-            const isAccessible = serverInfo ? serverInfo.isAccessible : false;
-            const lockReason = serverInfo
-              ? serverInfo.lockReason
-              : "teacher_locked";
+            const studentCategory = categoriesProgress.find((item) => item.category === act.category);
 
-            let lockMessage = "";
-            if (!isAccessible) {
-              if (lockReason === "teacher_locked") {
-                lockMessage = "لم يقم المعلم بفتح هذا النشاط بعد 🔒";
-              } else if (lockReason === "previous_not_completed") {
-                lockMessage = "عليك إكمال النشاط السابق أولاً 🔒";
-              }
-            }
+            const isOpen = studentCategory?.isOpen === true;
 
+            const prerequisitesMet = hasCompletedPrerequisites(act.id);
+            const canPlay = isOpen && prerequisitesMet;
             return (
               <article
                 key={act.id}
-                className={`activity-item ${!isAccessible ? "locked-activity" : "unlocked-activity"}`}
+                className={`activity-item ${isOpen ? "unlocked-activity" : "locked-activity"}`}
                 style={{
-                  opacity: isAccessible ? 1 : 0.7,
-                  filter: isAccessible ? "none" : "grayscale(20%)",
+                  opacity: isOpen ? 1 : 0.7,
+                  filter: isOpen ? "none" : "grayscale(20%)",
                   position: "relative",
-                }}
-              >
-                <img
-                  className="activity-cover"
-                  src={act.image}
-                  alt=""
-                  aria-hidden="true"
-                />
+                }}>
+                <img className="activity-cover" src={act.image} alt="" aria-hidden="true" />
 
-                {/* شارة حالة القفل فوق الكارت */}
                 <div
                   style={{
                     position: "absolute",
                     top: "12px",
                     left: "12px",
-                    background: isAccessible ? "#10B981" : "#EF4444",
+                    background: isOpen ? "#10B981" : "#EF4444",
                     color: "#fff",
                     padding: "4px 8px",
                     borderRadius: "12px",
@@ -207,14 +307,9 @@ function StudentSectionPage({
                     display: "flex",
                     alignItems: "center",
                     gap: "4px",
-                  }}
-                >
-                  {isAccessible ? (
-                    <Unlock size={14} />
-                  ) : (
-                    <LockKeyhole size={14} />
-                  )}
-                  <span>{isAccessible ? "متاح" : "مغلق"}</span>
+                  }}>
+                  {isOpen ? <Unlock size={14} /> : <LockKeyhole size={14} />}
+                  <span>{isOpen ? "مفتوح" : "مغلق"}</span>{" "}
                 </div>
 
                 <div className="activity-item-icon">
@@ -224,22 +319,21 @@ function StudentSectionPage({
                 <h2>{act.title}</h2>
                 <p>{act.desc}</p>
 
-                {isAccessible ? (
-                  <button type="button" onClick={() => navigate(act.path)}>
-                    ابدئي الاختبار
-                    <ChevronLeft size={20} />
-                  </button>
+                {isOpen ? (
+                  <>
+                    <button
+                      type="button"
+                      disabled={!canPlay}
+                      onClick={() => {
+                        if (canPlay) navigate("/student?page=homework");
+                      }}>
+                      ابدئي الاختبار
+                      <ChevronLeft size={20} />
+                    </button>
+                    {!canPlay && <p className="student-prerequisite-message">{prerequisiteMessage}</p>}{" "}
+                  </>
                 ) : (
-                  <div
-                    style={{
-                      color: "#EF4444",
-                      fontWeight: "bold",
-                      fontSize: "14px",
-                      marginTop: "10px",
-                    }}
-                  >
-                    {lockMessage}
-                  </div>
+                  <p className="student-prerequisite-message">لم يقم المعلم بفتح هذا النشاط بعد 🔒</p>
                 )}
               </article>
             );
@@ -254,10 +348,32 @@ function StudentSectionPage({
     );
   }
 
-  /*
-    صفحة الواجبات
-  */
   if (activePage === "homework") {
+    const homeworkItems = categoriesProgress
+      .filter((category) => category.isOpen === true)
+      .map((category) => {
+        const activity = activitiesList.find((item) => item.category === category.category);
+
+        return activity ? { ...category, activity } : null;
+      })
+      .filter(Boolean);
+
+    function formatDueDate(value) {
+      if (!value) return "لم يحدد المعلم موعدًا";
+
+      const date = new Date(value);
+
+      if (Number.isNaN(date.getTime())) {
+        return "لم يحدد المعلم موعدًا";
+      }
+
+      return new Intl.DateTimeFormat("ar-u-nu-latn", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }).format(date);
+    }
+
     return (
       <section className="student-inner-page">
         <header className="inner-page-header">
@@ -271,49 +387,44 @@ function StudentSectionPage({
         </header>
 
         <div className="homework-page-list">
-          <article className="homework-page-item">
-            <div className="homework-page-icon">
-              <LockKeyhole size={35} />
-            </div>
+          {homeworkItems.map((homework) => {
+            const Icon = homework.activity.icon;
+            const percentage = homework.percentage ?? 0;
+            const hasStarted = percentage > 0;
+            const canPlay = homework.isOpen === true && hasCompletedPrerequisites(homework.activity.id);
+            return (
+              <article className="homework-page-item" key={homework.category}>
+                <div className="homework-page-icon">
+                  <Icon size={35} />
+                </div>
 
-            <div>
-              <h2>كلمة المرور الآمنة</h2>
-              <p>
-                <CalendarDays size={17} />
-                موعد التسليم: الخميس
-              </p>
-            </div>
+                <div>
+                  <h2>{homework.category}</h2>
 
-            <span className="homework-status pending">قيد التنفيذ</span>
-            <button
-              type="button"
-              onClick={() => navigate("/student/games/password")}
-            >
-              فتح الواجب
-            </button>
-          </article>
+                  <p>
+                    <CalendarDays size={17} />
+                    موعد التسليم: {formatDueDate(homework.dueDate)}
+                  </p>
 
-          <article className="homework-page-item">
-            <div className="homework-page-icon">
-              <ShieldCheck size={35} />
-            </div>
+                  <p>
+                    نسبة الإنجاز: <span dir="ltr">{percentage}%</span>
+                  </p>
+                </div>
 
-            <div>
-              <h2>حماية المعلومات الشخصية</h2>
-              <p>
-                <CalendarDays size={17} />
-                موعد التسليم: الأحد
-              </p>
-            </div>
-
-            <span className="homework-status new">جديد</span>
-            <button
-              type="button"
-              onClick={() => navigate("/student/games/phishing")}
-            >
-              فتح الواجب
-            </button>
-          </article>
+                <span className={`homework-status ${homework.finished ? "completed" : hasStarted ? "pending" : "new"}`}>
+                  {homework.finished ? "مكتمل" : hasStarted ? "قيد التنفيذ" : "جديد"}
+                </span>
+                <button
+                  type="button"
+                  disabled={!canPlay}
+                  onClick={() => {
+                    if (canPlay) navigate(homework.activity.path);
+                  }}>
+                  {homework.finished ? "فتح النشاط" : hasStarted ? "متابعة الواجب" : "فتح الواجب"}
+                </button>
+              </article>
+            );
+          })}
         </div>
 
         <button className="back-home-button" type="button" onClick={onBackHome}>
@@ -327,6 +438,59 @@ function StudentSectionPage({
   /*
     بقية صفحات القائمة
   */
+
+  if (activePage === "achievements") {
+    const earnedBadges = categoryBadges.filter((badge) =>
+      categoriesProgress.some((progress) => progress.category === badge.category && progress.finished === true),
+    );
+
+    return (
+      <section className="student-inner-page">
+        <header className="inner-page-header">
+          <div>
+            <span className="inner-page-label">شارات الإنجاز</span>
+            <h1>إنجازاتي</h1>
+            <p>كل نشاط تكمله يضيف شارة جديدة إلى رحلتك!</p>
+          </div>
+
+          <Trophy size={52} />
+        </header>
+
+        {earnedBadges.length > 0 ? (
+          <div className="student-achievements-grid">
+            {earnedBadges.map((badge) => {
+              const Icon = badge.icon;
+
+              return (
+                <article className="student-card student-achievement-card" key={badge.category}>
+                  <div className={`student-badge ${badge.color}`}>
+                    <Icon className="student-badge-symbol" aria-hidden="true" />
+                    <CheckCircle2 className="student-badge-check" aria-hidden="true" />
+                  </div>
+
+                  <h2>{badge.label}</h2>
+                  <p>{badge.category}</p>
+                  <span className="homework-status completed">مكتمل</span>
+                </article>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="empty-page-content">
+            <Trophy size={75} strokeWidth={1.4} />
+            <h2>رحلة الإنجاز تبدأ بخطوة!</h2>
+            <p>أكمل أول نشاط لتحصل على شارتك الأولى.</p>
+          </div>
+        )}
+
+        <button className="back-home-button" type="button" onClick={onBackHome}>
+          العودة إلى الرئيسية
+          <Home size={20} />
+        </button>
+      </section>
+    );
+  }
+
   const currentPage = pageInformation[activePage];
 
   if (!currentPage) {
@@ -361,35 +525,59 @@ function StudentSectionPage({
   );
 }
 
+const categoryBadges = [
+  {
+    category: "رسائل التصيد",
+    label: "خبير/ة التصيد",
+    icon: Mail,
+    color: "purple",
+  },
+  {
+    category: "كلمات المرور",
+    label: "حارس كلمات المرور",
+    icon: LockKeyhole,
+    color: "blue",
+  },
+  {
+    category: "الاختبار الامن",
+    label: "خبير/ة القرار الآمن",
+    icon: ShieldCheck,
+    color: "green",
+  },
+  {
+    category: "اونو سايبر",
+    label: "بطل أونو",
+    icon: Gamepad2,
+    color: "orange",
+  },
+  {
+    category: "مونوبولي",
+    label: "بطل مونوبولي",
+    icon: Trophy,
+    color: "pink",
+  },
+];
+
 function StudentDashboard() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
 
-  const [activePage, setActivePage] = useState(searchParams.get("page") || "home");
-  const [searchText, setSearchText] = useState("");
-  const [activitiesStatus, setActivitiesStatus] = useState([]);
+  const activePage = searchParams.get("page") || "home";
 
-  // جلب حالة الأنشطة فور فتح اللوحة
-  useEffect(() => {
-    async function fetchActivitiesStatus() {
-      try {
-        const response = await fetch(
-          "http://localhost:4000/students/my-activities",
-          {
-            credentials: "include",
-          },
-        );
-        if (response.ok) {
-          const data = await response.json();
-          setActivitiesStatus(data);
-        }
-      } catch (error) {
-        console.error("فشل جلب حالة الأنشطة:", error);
+  function setActivePage(page) {
+    setSearchParams((previousParams) => {
+      const params = new URLSearchParams(previousParams);
+
+      if (page === "home") {
+        params.delete("page");
+      } else {
+        params.set("page", page);
       }
-    }
 
-    fetchActivitiesStatus();
-  }, []);
+      return params;
+    });
+  }
+  const [searchText, setSearchText] = useState("");
 
   async function handleLogout() {
     try {
@@ -408,19 +596,23 @@ function StudentDashboard() {
     }
   }
 
-  function startActivity() {
-    // توجيه الطالب لأول نشاط متاح له
-    const firstAvailable = activitiesList.find((act) => {
-      const status = activitiesStatus.find((s) => s.activityId === act.id);
-      return status ? status.isAccessible : false;
-    });
+  const user = useRouteLoaderData("student");
 
-    if (firstAvailable) {
-      navigate(firstAvailable.path);
-    } else {
-      setActivePage("activities");
-    }
-  }
+  const { points, completedCategories, totalCategories } = user.student;
+
+  const progressPercentage = (completedCategories / totalCategories) * 100;
+
+  const categoriesProgress = user.student.categoriesProgress ?? [];
+
+  const earnedBadges = categoryBadges.filter((badge) =>
+    categoriesProgress.some((progress) => progress.category === badge.category && progress.finished === true),
+  );
+
+  const homeworkIndex = categoriesProgress.findIndex((category) => category.isOpen === true && category.finished === false);
+
+  const currentHomework = homeworkIndex !== -1 ? categoriesProgress[homeworkIndex] : null;
+
+  const nextCategory = homeworkIndex !== -1 ? (categoriesProgress[homeworkIndex + 1] ?? null) : null;
 
   return (
     <div className="student-page" dir="rtl">
@@ -444,13 +636,10 @@ function StudentDashboard() {
                 key={item.id}
                 type="button"
                 className={`student-nav-button ${activePage === item.id ? "active" : ""}`}
-                onClick={() => setActivePage(item.id)}
-              >
+                onClick={() => setActivePage(item.id)}>
                 <span className="student-nav-icon">
                   <Icon size={23} />
-                  {item.id === "messages" && (
-                    <span className="student-message-dot" />
-                  )}
+                  {item.id === "messages" && <span className="student-message-dot" />}
                 </span>
                 <span>{item.label}</span>
               </button>
@@ -460,19 +649,14 @@ function StudentDashboard() {
 
         <div className="student-sidebar-line" />
 
-        <button
-          className="student-logout-button"
-          type="button"
-          onClick={handleLogout}
-        >
+        <button className="student-logout-button" type="button" onClick={handleLogout}>
           <LogOut size={23} />
           تسجيل الخروج
         </button>
-        
+
         <div className="sidebar-banner">
           <img src={lock} alt="Cyber Security Lock" />
         </div>
-        
       </aside>
 
       {/* محتوى لوحة الطالب */}
@@ -489,20 +673,12 @@ function StudentDashboard() {
             />
           </div>
 
-          <button
-            className="student-notification"
-            type="button"
-            aria-label="الإشعارات"
-          >
+          <button className="student-notification" type="button" aria-label="الإشعارات">
             <Bell size={25} />
             <span />
           </button>
 
-          <button
-            className="student-profile"
-            type="button"
-            aria-label="الملف الشخصي"
-          >
+          <button className="student-profile" type="button" aria-label="الملف الشخصي">
             👩🏻‍🎓
           </button>
         </header>
@@ -516,28 +692,30 @@ function StudentDashboard() {
               </div>
 
               <div className="student-welcome-text">
-                <h1>مرحبًا، سارة!</h1>
-                <p>
-                  أكملتِ <strong>٦</strong> من <strong>١٠</strong> أنشطة
-                </p>
-
-                <span className="student-progress-message">
-                  تابعي التقدم الرائع
-                  <Star size={20} fill="currentColor" />
-                </span>
-
+                <h1>مرحبًا، {user.name}!</h1>
                 <div className="student-progress-area">
-                  <div className="student-progress-track">
-                    <span style={{ width: "60%" }} />
+                  <div
+                    className="student-progress-track"
+                    role="progressbar"
+                    aria-label="الأنشطة المكتملة"
+                    aria-valuemin={0}
+                    aria-valuemax={totalCategories}
+                    aria-valuenow={completedCategories}>
+                    <span style={{ width: `${progressPercentage}%` }} />
                   </div>
-                  <strong>٦ / ١٠</strong>
+
+                  <strong>
+                    المكتمل:{" "}
+                    <span dir="ltr">
+                      {completedCategories} / {totalCategories}
+                    </span>
+                  </strong>
                 </div>
               </div>
 
               <div className="welcome-student-picture">👩🏻‍💻</div>
             </section>
-
-            {/* النشاط التالي والواجب */}
+            {/* النشاط التالي والواجب */}(
             <section className="student-main-cards">
               <article className="student-card next-activity">
                 <header className="student-card-title">
@@ -545,53 +723,78 @@ function StudentDashboard() {
                   <Zap size={28} fill="currentColor" />
                 </header>
 
-                <div className="next-activity-content">
-                  <div className="phishing-picture">🎣✉️</div>
+                {nextCategory && (
+                  <div className="next-activity-content">
+                    <div className="phishing-picture">
+                      <Gamepad2 size={50} />
+                    </div>
 
-                  <div>
-                    <h3>اكتشفي رسالة التصيد</h3>
+                    <div>
+                      <h3>{nextCategory.category}</h3>
 
-                    <button
-                      className="start-activity"
-                      type="button"
-                      onClick={startActivity}
-                    >
-                      ابدئي النشاط
-                      <ChevronLeft size={21} />
-                    </button>
+                      <p>
+                        {nextCategory.finished
+                          ? "مكتمل"
+                          : nextCategory.isOpen
+                            ? "مفتوح — بانتظار إكمال الواجب الحالي"
+                            : "لم يفتح المعلم هذا النشاط بعد"}
+                      </p>
+                    </div>
                   </div>
-                </div>
+                )}
               </article>
 
-              <article className="student-card student-homework">
+              <article
+                className="student-card student-homework"
+                role="button"
+                tabIndex={0}
+                style={{ cursor: "pointer" }}
+                onClick={() => setActivePage("homework")}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    setActivePage("homework");
+                  }
+                }}>
                 <header className="student-card-title">
                   <h2>واجباتي</h2>
                   <FileText size={28} />
                 </header>
 
-                <button
-                  className="homework-details"
-                  type="button"
-                  onClick={() => setActivePage("homework")}
-                >
-                  <div className="homework-lock">
-                    <LockKeyhole size={50} />
-                  </div>
+                {currentHomework && (
+                  <div className="homework-details">
+                    <div className="homework-lock">
+                      <BookOpen size={50} />
+                    </div>
 
-                  <div className="homework-text">
-                    <h3>كلمة المرور الآمنة</h3>
-                    <p>
-                      <CalendarDays size={18} />
-                      موعد التسليم: الخميس
-                    </p>
-                  </div>
+                    <div className="homework-text">
+                      <h3>{currentHomework.category}</h3>
 
-                  <ChevronLeft size={28} />
-                </button>
+                      <p>
+                        نسبة الإنجاز: <span dir="ltr">{currentHomework.percentage ?? 0}%</span>
+                      </p>
+
+                      <div className="student-progress-area">
+                        <div
+                          className="student-progress-track"
+                          role="progressbar"
+                          aria-label="نسبة إنجاز الواجب"
+                          aria-valuemin={0}
+                          aria-valuemax={100}
+                          aria-valuenow={currentHomework.percentage ?? 0}>
+                          <span
+                            style={{
+                              width: `${currentHomework.percentage ?? 0}%`,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </article>
             </section>
-
-            {/* النقاط والشارات والنصيحة */}
+            ){/* النقاط والشارات والنصيحة */}
             <section className="student-secondary-cards">
               <article className="student-card student-points-card">
                 <header className="student-card-title">
@@ -603,7 +806,7 @@ function StudentDashboard() {
                   <div className="student-medal">
                     <Star size={53} fill="currentColor" />
                   </div>
-                  <strong>٨٥٠ نقطة</strong>
+                  <strong>{points} نقطة</strong>{" "}
                 </div>
               </article>
 
@@ -613,22 +816,21 @@ function StudentDashboard() {
                   <Trophy size={28} fill="currentColor" />
                 </header>
 
-                <div className="student-badges">
-                  <div className="student-badge-item">
-                    <div className="student-badge purple">
-                      <Mail size={40} />
-                      <CheckCircle2 size={24} />
-                    </div>
-                    <p>محققة التصيد</p>
-                  </div>
+                <div className="student-badges" style={{ "--badge-count": Math.max(earnedBadges.length, 1) }}>
+                  {earnedBadges.map((badge) => {
+                    const Icon = badge.icon;
 
-                  <div className="student-badge-item">
-                    <div className="student-badge blue">
-                      <ShieldCheck size={43} />
-                      <CheckCircle2 size={24} />
-                    </div>
-                    <p>حامية الخصوصية</p>
-                  </div>
+                    return (
+                      <div className="student-badge-item" key={badge.category} title={badge.category}>
+                        <div className={`student-badge ${badge.color}`}>
+                          <Icon className="student-badge-symbol" aria-hidden="true" />
+                          <CheckCircle2 className="student-badge-check" aria-hidden="true" />
+                        </div>
+
+                        <p>{badge.label}</p>
+                      </div>
+                    );
+                  })}
                 </div>
               </article>
 
@@ -648,13 +850,8 @@ function StudentDashboard() {
                 </div>
               </article>
             </section>
-
             {/* متابعة التعلم */}
-            <button
-              className="continue-learning"
-              type="button"
-              onClick={() => setActivePage("learning")}
-            >
+            <button className="continue-learning" type="button" onClick={() => setActivePage("learning")}>
               <div className="learning-books">📚 💻</div>
               <span className="learning-arrow">
                 <ChevronLeft size={25} />
@@ -670,7 +867,7 @@ function StudentDashboard() {
           <StudentSectionPage
             activePage={activePage}
             onBackHome={() => setActivePage("home")}
-            activitiesStatus={activitiesStatus}
+            categoriesProgress={categoriesProgress}
             navigate={navigate}
           />
         )}
