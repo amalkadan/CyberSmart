@@ -4,10 +4,6 @@
   box-sizing: border-box;
 }
 /* 1. إخفاء شريط التمرير (Scrollbar) تماماً لكل عناصر الموقع والمتصفح */
-* {
-  -ms-overflow-style: none;  /* لمتصفحات IE و Edge */
-  scrollbar-width: none;  /* لمتصفح Firefox */
-}
 
 ::-webkit-scrollbar {
   display: none; /* لمتصفحات Chrome و Safari و Opera */
@@ -28,13 +24,20 @@ html, body {
   display: flex;
   height: 100vh;
   width: 100vw;
-  background-color: #f4f6f9;
+  /* background-color: #f4f6f9; */
+    background:
+     radial-gradient(
+      circle at 20% 10%,
+      rgba(26, 102, 174, 0.65),
+      transparent 35%
+    ),
+    linear-gradient(135deg, #0a376d, #031936);
   font-family: system-ui, -apple-system, sans-serif;
   overflow: hidden;
 }
 
 /* 4. القائمة الجانبية بالأبعاد والحشوات الأنيقة السابقة */
-.sidebar {
+/* .sidebar {
   width: 260px;
   height: 100vh;
   background-color: #091A2E;
@@ -45,7 +48,34 @@ html, body {
   padding: 20px 15px;
   box-sizing: border-box;
   flex-shrink: 0;
-  overflow-y: auto; /* يسمح بالتمرير الهادئ عند الحاجة مع إخفاء الشريط */
+  overflow-y: auto;
+} */
+
+.sidebar {
+  top: 0;
+  right: 0;
+  z-index: 20;
+  
+  width: 230px;
+  height: 100vh;
+  padding: 25px 15px;
+
+  background:
+    radial-gradient(
+      circle at 50% 100%,
+      #091A2E,
+      transparent 42%
+    ),
+    linear-gradient(180deg, #031a38, #02132c);
+
+  border-left: 1px solid rgba(91, 202, 250, 0.16);
+  color: white;
+  flex-shrink: 0; /* يمنع القائمة من الانكماش عند كبر المحتوى */
+  
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow-y: auto;;
 }
 
 /* الشعار CyberSmart */
@@ -78,12 +108,13 @@ html, body {
   align-items: center;
   gap: 12px;
   padding: 12px 16px;
-  color: #a0aec0;
+  color: #CAD8EB;
   text-decoration: none;
   font-size: 15px;
   font-weight: 500;
   border-radius: 12px;
   transition: all 0.2s ease-in-out;
+  margin-bottom: 5px;
 }
 
 .nav-icon {
@@ -91,14 +122,14 @@ html, body {
 }
 
 .nav-link:hover {
-  background-color: #091A2E;
+  background-color: #082B49;
   color: #ffffff;
 }
 
 /* الزر النشط */
 .nav-link.active {
-  background-color: #0066ff;
-  color: #ffffff;
+  background: linear-gradient(90deg, #55dcf5, #2bc7ed);
+  color: #031835;
   font-weight: bold;
 }
 
@@ -144,4 +175,34 @@ html, body {
 /* في حال أردت تغيير اللون عند التمرير بالماوس تمييزاً لزر الخروج */
 .logout-btn:hover {
   color: #ff4d4d; /* لون أحمر اختياري للتنبيه عند الخروج */
+}
+
+
+
+
+
+.teacher-sidebar-logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  direction: ltr;
+  font-size: 25px;
+  font-weight: 400;
+  margin: 0 0 20px 0;
+}
+
+.teacher-sidebar-logo svg {
+  color: #42dcf4;
+  fill: rgba(66, 220, 244, 0.12);
+}
+
+.teacher-sidebar-logo span span {
+  color: #43daf2;
+}
+
+.sidebar-title {
+  margin: 10px 10px 15px;
+  color: #43d9f3;
+  font-size: 18px;
 }

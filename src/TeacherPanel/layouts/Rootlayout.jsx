@@ -1,6 +1,6 @@
 import { Outlet, NavLink, useNavigate } from 'react-router-dom';
 import '../style/Rootlayout.css';
-
+import { ShieldCheck } from "lucide-react";
 import lock from '../img/lock.png';
 
 import { 
@@ -42,17 +42,27 @@ async function handleLogout() {
       <aside className="sidebar">
         <div>
           {/* الشعار CyberSmart */}
-          <div className="logo-section">
+
+          {/* <div className="logo-section">
             <h2>
               Cyber<span className="logo-blue">Smart</span>
             </h2>
-          </div>
+          </div> */}
+
+             <div className="teacher-sidebar-logo">
+              <ShieldCheck size={40} />
+              <span dir="ltr">
+              Cyber<span>Smart</span>
+              </span>
+              </div>
+              
+              <h2 className="sidebar-title">لوحة المعلم</h2>
 
           {/* قائمة الروابط مع الأيقونات */}
           <nav className="nav-menu">
             <NavLink className="nav-link" to="/teacher" end>
               <FaHome className="nav-icon" />
-              <span>لوحة المعلّم</span>
+              <span>الرئيسية</span>
             </NavLink>
 
 
