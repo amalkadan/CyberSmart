@@ -47,7 +47,7 @@
   background:
     radial-gradient(
       circle at 50% 100%,
-      rgba(17, 72, 126, 0.75),
+      #091A2E,
       transparent 42%
     ),
     linear-gradient(180deg, #031a38, #02132c);
@@ -146,12 +146,22 @@
 }
 
 .student-logout-button {
-  color: #ff6887;
+    background: none;
+  border: none;
+  width: 100%;
+  text-align: right;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  display: flex;
+  align-items: center;
 }
 
 .student-logout-button:hover {
-  background: rgba(255, 104, 135, 0.1);
+   color: #ff4d4d;
 }
+
 
 /* Main */
 

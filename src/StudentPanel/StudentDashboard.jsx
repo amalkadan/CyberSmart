@@ -558,6 +558,9 @@ import monopolyImage from "../TeacherPanel/img/monopoly-card.jpeg";
 import unoImage from "../TeacherPanel/img/Uno_Cyber.jpeg";
 import "./StudentDashboard.css";
 
+
+import lock from '../TeacherPanel/img/lock.png';
+
 const menuItems = [
   { id: "home", label: "الرئيسية", icon: Home },
   { id: "learning", label: "مسار التعلم", icon: BookOpen },
@@ -991,6 +994,11 @@ function StudentDashboard() {
           <LogOut size={23} />
           تسجيل الخروج
         </button>
+        
+        <div className="sidebar-banner">
+          <img src={lock} alt="Cyber Security Lock" />
+        </div>
+        
       </aside>
 
       {/* محتوى لوحة الطالب */}
