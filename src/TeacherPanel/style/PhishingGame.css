@@ -1,3 +1,8 @@
+/* ==========================================================================
+   PhishingGame Styles
+   ========================================================================== */
+
+/* الحاوية الرئيسية */
 .phishing-game-container {
   min-height: 100vh;
   padding: 24px 40px;
@@ -5,17 +10,31 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: center;
   box-sizing: border-box;
   font-family: inherit;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-/* الهيدر العلوي */
+.game-status-message {
+  color: #ffffff;
+  text-align: center;
+  padding: 50px;
+  font-size: 1.2rem;
+}
+
+/* ==========================================================================
+   1. الهيدر العلوي وشريط التقدم
+   ========================================================================== */
 .game-top-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  position: relative;
+  align-items: flex-start;
   width: 100%;
+  max-width: 1100px;
+  position: relative;
   margin-bottom: 20px;
 }
 
@@ -26,13 +45,16 @@
   padding: 10px 20px;
   border-radius: 20px;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 20px;
   font-weight: 600;
-  transition: all 0.2s;
+  transition: all 0.2s ease;
+  z-index: 10;
+  margin-top: 10px;
 }
 
 .game-back-btn:hover {
   background: rgba(56, 189, 248, 0.25);
+  transform: translateX(3px);
 }
 
 .header-center-title {
@@ -40,43 +62,31 @@
   flex-direction: column;
   align-items: center;
   gap: 8px;
+  margin: 0 auto;
 }
 
 .game-main-title {
-  font-size: 60px;
+  font-size: 4.2rem;
   font-weight: 800;
   margin: 0;
+  color: #ffffff;
+  text-align: center;
+  text-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
   display: flex;
   align-items: center;
   gap: 10px;
-  color: #ffffff;
-  text-shadow: 0 0 15px rgba(56, 189, 248, 0.5);
+  margin-bottom: 4px;
+  margin-top: 10px;
 }
 
-.score-badge-box {
-  background: rgba(15, 23, 42, 0.85);
-  border: 2px solid #f59e0b;
-  padding: 8px 18px;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
-}
-
-.star-icon { font-size: 20px; }
-.score-label { color: #94a3b8; font-size: 14px; }
-.score-value { color: #fbbf24; font-weight: 800; font-size: 18px; }
-
-/* شريط التقدم */
 .progress-bar-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 12px;
   position: relative;
-  width: 220px;
-  margin-top: 4px;
+  width: 700px;
+  margin-top: 6px;
 }
 
 .progress-line {
@@ -87,6 +97,7 @@
   height: 3px;
   background: #1e293b;
   z-index: 1;
+  transform: translateY(-50%);
 }
 
 .progress-step-dot {
@@ -96,13 +107,19 @@
   background: #0f172a;
   border: 2px solid #334155;
   z-index: 2;
-  transition: all 0.3s;
+  transition: all 0.3s ease;
 }
 
 .progress-step-dot.active {
   background: #38bdf8;
   border-color: #38bdf8;
   box-shadow: 0 0 12px #38bdf8;
+  transform: scale(1.2);
+}
+
+.progress-step-dot.completed {
+  background: #22c55e;
+  border-color: #22c55e;
 }
 
 .step-counter-text {
@@ -110,266 +127,313 @@
   color: #94a3b8;
 }
 
-/* المنطقة الوسطى متناسقة وموسّطة بحجم ممتازم للبطاقة والشخصية */
+/* ==========================================================================
+   2. منطقة الأسئلة والخيارات
+   ========================================================================== */
 .game-center-content {
   display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 800px;
+  margin: 20px 0;
+}
+
+.question-card-wrapper {
+  display: flex;
+  gap: 20px;
+  width: 100%;
   justify-content: center;
   align-items: center;
-  gap: 36px;
-  max-width: 920px;
-  margin: 20px auto;
-  width: 100%;
 }
 
-.email-card-box {
-  flex: 1;
-  background: #ffffff;
-  border-radius: 24px;
-  padding: 32px;
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
-  color: #0f172a;
-}
-
-.email-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 16px;
-}
-
-.email-title {
-  font-size: 32px;
-  font-weight: 800;
-  color: #0f172a;
-  margin: 0 0 4px 0;
-}
-
-.email-sender-info, .email-timestamp {
-  font-size: 13px;
-  color: #64748b;
-  display: block;
-}
-
-.email-gift-badge { font-size: 24px; }
-
-.email-text-message {
-  font-size: 17px;
-  color: #334155;
-  margin-bottom: 20px;
-  line-height: 1.6;
-}
-
-.email-link-pill {
-  background: #f0f9ff;
-  border: 2px dashed #38bdf8;
-  padding: 10px 18px;
-  border-radius: 12px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  color: #0284c7;
-  font-size: 15px;
-  direction: ltr;
-}
-
-/* الشخصية الكرتونية وإطار الإشارة */
 .mascot-side {
   display: flex;
   justify-content: center;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .mascot-frame {
   position: relative;
   border-radius: 20px;
-  padding: 10px;
-  background: rgba(15, 23, 42, 0.5);
+  padding: 8px;
+  background: rgba(15, 23, 42, 0.6);
   border: 1px solid rgba(56, 189, 248, 0.3);
   display: inline-block;
 }
 
 .mascot-img-glow {
-  width: 170px;
+  width: 200px;
   height: auto;
   border-radius: 12px;
   display: block;
+  object-fit: cover;
 }
 
 .question-mark-badge {
   position: absolute;
-  top: -12px;
-  right: -12px;
+  top: -10px;
+  right: -10px;
   background: #38bdf8;
   color: #0f172a;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
-  font-size: 20px;
+  font-size: 16px;
   box-shadow: 0 0 10px #38bdf8;
 }
 
-/* التلميحات الجانبية */
-.hints-side {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.hint-pill-card {
-  background: rgba(15, 23, 42, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 14px 18px;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-}
-
-.hint-pill-text {
-  font-size: 15px;
-  font-weight: 600;
-  color: #f1f5f9;
-}
-
-/* تحكم الأزرار السفلي متراصف بالمنتصف */
-.game-footer-controls {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-top: 10px;
-}
-
-.action-buttons-group {
-  display: flex;
-  gap: 24px;
-  justify-content: center;
-  width: 100%;
-}
-
-.game-btn {
-  padding: 16px 40px;
-  border-radius: 18px;
-  font-size: 20px;
-  font-weight: 1000;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  transition: all 0.2s ease;
-  min-width: 200px;
-  justify-content: center;
-}
-
-.phishing-danger-btn {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  color: #ffffff;
-  box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
-}
-
-.safe-success-btn {
-  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-  color: #ffffff;
-  box-shadow: 0 0 20px rgba(16, 185, 129, 0.4);
-}
-
-.game-btn:hover {
-  transform: translateY(-3px) scale(1.02);
-}
-
-.think-bubble-pill {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  padding: 8px 24px;
+.email-card-box {
+  flex: 1;
+  background: #ffffff;
   border-radius: 20px;
-  font-size: 14px;
-  color: #cbd5e1;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 14px;
+  padding: 20px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  text-align: center;
 }
 
-/* شاشة الشرح والنتيجة */
+.email-text-message {
+  font-size: 1.8rem;
+  font-weight: 700;
+  line-height: 1.6;
+  color: #1e293b;
+  margin: 0;
+  font-weight: bold;
+}
+
+.options-list-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.option-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 28px;
+  background-color: rgba(202, 217, 245, 0.85);
+  border: 2px solid rgba(56, 189, 248, 0.3);
+  border-radius: 14px;
+  color: #050B18;
+  font-size: 1.9rem;
+  font-weight: bolder;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: right;
+}
+
+.option-button:hover {
+  border-color: #548aa1;
+  background-color: #21ADF8;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2);
+}
+
+.option-text {
+  flex: 1;
+}
+
+.option-badge {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: #0f172a;
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+  margin-right: 15px;
+  flex-shrink: 0;
+}
+
+/* ==========================================================================
+   3. شاشة التغذية الراجعة والنتيجة
+   ========================================================================== */
 .result-overlay-screen {
   background: rgba(11, 23, 42, 0.95);
   border: 2px solid #38bdf8;
-  border-radius: 28px;
-  padding: 32px 40px;
-  max-width: 650px;
-  margin: 15px auto;
+  border-radius: 24px;
+  padding: 30px 40px;
+  max-width: 750px;
+  width: 90%;
+  margin: 20px auto;
   text-align: center;
-  box-shadow: 0 0 40px rgba(56, 189, 248, 0.3);
+  box-shadow: 0 0 35px rgba(56, 189, 248, 0.25);
+  animation: fadeIn 0.3s ease-out;
+  margin-bottom: 170px;
 }
 
-.result-overlay-screen.correct { border-color: #22c55e; box-shadow: 0 0 40px rgba(34, 197, 94, 0.3); }
-.result-overlay-screen.wrong { border-color: #ef4444; box-shadow: 0 0 40px rgba(239, 68, 68, 0.3); }
+.result-overlay-screen.correct {
+  border-color: #22c55e;
+  box-shadow: 0 0 35px rgba(34, 197, 94, 0.25);
+}
 
-.result-status-icon { font-size: 44px; }
-.result-title { font-size: 30px; font-weight: 800; margin: 6px 0; }
-.result-subtitle { font-size: 18px; color: #38bdf8; font-weight: 700; }
+.result-overlay-screen.wrong {
+  border-color: #ef4444;
+  box-shadow: 0 0 35px rgba(239, 68, 68, 0.25);
+}
+
+.score-badge-box {
+  background: rgba(15, 23, 42, 0.85);
+  border: 2px solid #f59e0b;
+  padding: 6px 16px;
+  border-radius: 16px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 0 15px rgba(245, 158, 11, 0.2);
+  margin-bottom: 12px;
+}
+
+.star-icon {
+  font-size: 18px;
+}
+
+.score-label {
+  color: #94a3b8;
+  font-size: 14px;
+}
+
+.score-value {
+  color: #fbbf24;
+  font-weight: 800;
+  font-size: 16px;
+}
+
+.result-status-icon {
+  font-size: 2.8rem;
+  display: block;
+  margin-top: 10px;
+}
+
+.result-title {
+  font-size: 1.8rem;
+  font-weight: 800;
+  margin: 8px 0;
+}
+
+.result-subtitle {
+  font-size: 1.1rem;
+  color: #cbd5e1;
+  margin-top: 12px;
+}
 
 .points-pill {
   display: inline-block;
   padding: 6px 18px;
   border-radius: 12px;
-  font-size: 16px;
+  font-size: 1.1rem;
   font-weight: bold;
   margin-top: 6px;
 }
 
-.points-pill.correct { background: #166534; color: #4ade80; }
-.points-pill.wrong { background: #991b1b; color: #fca5a5; }
+.points-pill.correct {
+  background: rgba(22, 101, 52, 0.8);
+  color: #4ade80;
+}
+
+.points-pill.wrong {
+  background: rgba(153, 27, 27, 0.8);
+  color: #fca5a5;
+}
 
 .result-reasons-grid {
   display: flex;
   justify-content: center;
   gap: 16px;
   margin: 20px 0;
+  flex-wrap: wrap;
 }
 
 .reason-card {
   background: #ffffff;
   color: #0f172a;
-  padding: 14px;
-  border-radius: 16px;
+  padding: 14px 20px;
+  border-radius: 14px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 6px;
-  min-width: 130px;
+  min-width: 150px;
+  flex: 1;
 }
 
-.reason-icon { font-size: 22px; }
-.reason-text { font-size: 13px; font-weight: 700; }
+.reason-icon {
+  font-size: 24px;
+}
+
+.reason-text {
+  font-size: 0.95rem;
+  font-weight: 700;
+}
 
 .result-tip-box {
   background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 12px 20px;
-  border-radius: 16px;
-  font-size: 15px;
-  margin-bottom: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 14px 20px;
+  border-radius: 14px;
+  font-size: 1rem;
+  margin-bottom: 24px;
+  color: #e2e8f0;
 }
 
 .next-question-btn {
   background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
   color: #ffffff;
   border: none;
-  padding: 12px 36px;
-  font-size: 17px;
+  padding: 12px 32px;
+  font-size: 1.1rem;
   font-weight: bold;
-  border-radius: 16px;
+  border-radius: 14px;
   cursor: pointer;
-  transition: transform 0.2s;
+  transition: all 0.2s ease;
 }
 
 .next-question-btn:hover {
-  transform: scale(1.05);
+  transform: scale(1.04);
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.4);
+}
+
+/* ==========================================================================
+   4. الشريط السفلي والحركات
+   ========================================================================== */
+.game-footer-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 15px;
+}
+
+.think-bubble-pill {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 10px 24px;
+  border-radius: 20px;
+  font-size: 1.95rem;
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

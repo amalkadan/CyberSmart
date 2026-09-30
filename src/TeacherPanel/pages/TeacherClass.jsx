@@ -1,130 +1,101 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import '../style/TeacherClasses.css';
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { toast } from "sonner";
+import "../style/TeacherClasses.css";
+import LoadingSpinner from "../../components/LoadingSpinner";
+
+const classrooms = ["السابع ا", "السابع ب", "السابع ج", "الثامن ا", "الثامن ب", "الثامن ج", "التاسع ا", "التاسع ب", "التاسع ج"];
 
 export default function TeacherClasses() {
-  const navigate = useNavigate();
+  const [students, setStudents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  // قائمة الصفوف (يمكن ربطها مع الباك إند بسهولة)
-  const [classes, setClasses] = useState([
-    { id: 1, name: 'الصف الثامن أ', grade: 'الثامن', studentCount: 24,  },
-    { id: 2, name: 'الصف الثامن ب', grade: 'الثامن', studentCount: 18, },
-    { id: 3, name: 'الصف السابع ج', grade: 'السابع', studentCount: 30,  }
-  ]);
+  useEffect(() => {
+    const controller = new AbortController();
 
-  // حالات Modal إنشاء صف جديد
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [className, setClassName] = useState('');
-  const [gradeLevel, setGradeLevel] = useState('');
+    async function loadStudents() {
+      try {
+        const response = await fetch("http://localhost:4000/students", {
+          credentials: "include",
+          signal: controller.signal,
+        });
 
-  // إضافة صف جديد
-  const handleAddClass = (e) => {
-    e.preventDefault();
-    if (!className || !gradeLevel) return;
+        const data = await response.json();
 
-    const newClass = {
-      id: Date.now(),
-      name: className,
-      grade: gradeLevel,
-      studentCount: 0,
-      code: `CS-${Math.floor(100 + Math.random() * 900)}`
-    };
+        if (!response.ok) {
+          throw new Error(data.message || "تعذر تحميل الطلاب");
+        }
 
-    setClasses([...classes, newClass]);
-    setClassName('');
-    setGradeLevel('');
-    setIsModalOpen(false);
-  };
+        setStudents(data.students);
+      } catch (err) {
+        if (!controller.signal.aborted) {
+          setError(err.message);
+          toast.error(err.message);
+        }
+      } finally {
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    loadStudents();
+
+    return () => controller.abort();
+  }, []);
+
+  const populatedClasses = classrooms
+    .map((className) => ({
+      className,
+      studentCount: students.filter((student) => student.className?.trim() === className).length,
+    }))
+    .filter((classroom) => classroom.studentCount > 0);
 
   return (
     <div className="teacher-classes-container" dir="rtl">
-      
-      {/* البنر العلوي */}
       <div className="classes-header">
-        <div>
-          <h1>إدارة الصفوف الدراسية 🏫</h1>
-          <p>يمكنك إنشاء الصفوف الجديدة ومتابعة عدد الطلاب ورموز الانضمام الخاصة بك.</p>
-          <button className="add-class-btn" onClick={() => setIsModalOpen(true)}>
-          + إضافة صف جديد
-        </button>
+        <div className="classes-header-text">
+          <h1>صفوفنا وطلابنا 🏫</h1>
+          <p>كل صف بداية جديدة — اختر صفًا لمتابعة طلابه وتقدّمهم.</p>
         </div>
 
+        <Link className="add-class-btn" to="/teacher/student-status">
+          عرض جميع الطلاب
+          <span aria-hidden="true">←</span>
+        </Link>
       </div>
 
-     
+      {error && <p role="alert">{error}</p>}
 
-      {/* شبكة بطاقات الصفوف */}
       <div className="classes-grid">
-        {classes.map((cls) => (
-          <div key={cls.id} className="class-card">
-            <div className="class-card-header">
-              <span className="class-tag">{cls.grade}</span>
-            </div>
-            
-            <h2 className="class-title">{cls.name}</h2>
-            
-            <div className="class-info">
-              <span>👥 {cls.studentCount} طالب</span>
-            </div>
+        {loading ? (
+          <LoadingSpinner label="جارٍ تحميل الصفوف" />
+        ) : error ? null : populatedClasses.length === 0 ? (
+          <p>لا توجد صفوف تحتوي على طلاب حاليًا.</p>
+        ) : (
+          populatedClasses.map(({ className, studentCount }) => (
+            <Link
+              key={className}
+              c
+              className="class-card"
+              to={`/teacher/student-status?className=${encodeURIComponent(className)}`}
+              style={{ textDecoration: "none", color: "inherit" }}>
+              <div className="class-card-header">
+                <span className="class-tag">{className.split(" ")[0]}</span>
+              </div>
 
-            {/* <div className="class-card-actions">
-              <button 
-                className="view-students-btn"
-                onClick={() => navigate(`/teacher/students?classId=${cls.id}`)}
-              >
-                عرض الطلاب 👥
-              </button>
-            </div> */}
-          </div>
-        ))}
+              <h2 className="class-title">الصف {className}</h2>
+
+              <div className="class-info">
+                <span>👥 {studentCount} طالب</span>
+              </div>
+
+              <span className="view-students-btn">عرض الطلاب ←</span>
+            </Link>
+          ))
+        )}
       </div>
-
-      {/* نافذة إضافة صف جديد (Modal) */}
-      {isModalOpen && (
-        <div className="modal-overlay">
-          <div className="class-modal-card">
-            <button className="modal-close-btn" onClick={() => setIsModalOpen(false)}>✕</button>
-
-            <div className="modal-header">
-              <div className="modal-icon">🏫</div>
-              <h2>إضافة صف جديد</h2>
-            </div>
-            <p className="modal-subtitle">أدخل تفاصيل الصف لإنشائه وتوليد رمز انضمام خاص به.</p>
-
-            <form onSubmit={handleAddClass} className="class-form">
-              <div className="form-group">
-                <label>اسم الصف</label>
-                <input 
-                  type="text" 
-                  placeholder="مثال: الصف الثامن أ"
-                  value={className}
-                  onChange={(e) => setClassName(e.target.value)}
-                  required 
-                />
-              </div>
-
-              <div className="form-group">
-                <label>المرحلة / المستوى</label>
-                <select 
-                  value={gradeLevel}
-                  onChange={(e) => setGradeLevel(e.target.value)}
-                  required
-                >
-                  <option value="" disabled>اختر المستوى الدراسي</option>
-                  <option value="السابع">السابع</option>
-                  <option value="الثامن">الثامن</option>
-                  <option value="التاسع">التاسع</option>
-                </select>
-              </div>
-
-              <button type="submit" className="submit-class-btn">
-                إنشاء الصف الآن
-              </button>
-            </form>
-          </div>
-        </div>
-      )}
-
     </div>
   );
 }
