@@ -13,6 +13,7 @@ import decisionImg from "../img/decision-card.png";
 import monopolyImg from "../img/monopoly-card.jpeg";
 import unoImg from "../img/Uno_Cyber.jpeg"; // صورة لعبة UNO السيبرانية
 
+
 export default function TeacherActivities() {
   const navigate = useNavigate();
 
@@ -209,9 +210,7 @@ export default function TeacherActivities() {
             + تعيين نشاط جديد
           </button>
         </div>
-        <div className="hero-image-wrapper">
-          <img src={heroImg} alt="شخصية حماية الإنترنت" className="hero-mascot-img" />
-        </div>
+       
       </div>
 
       {/* شبكة بطاقات الألعاب - بدون شارات القفل للمعلم */}

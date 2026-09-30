@@ -2,84 +2,99 @@ import React, { useState } from 'react';
 import '../style/TeacherMessages.css';
 
 export default function TeacherMessages() {
-  // نوع المستلم: 'class' (صف كامل) أو 'students' (طلاب محددين)
   const [targetType, setTargetType] = useState('class');
   const [selectedTarget, setSelectedTarget] = useState('');
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [errors, setErrors] = useState({});
 
-  // قائمة وهمية للأرشيف كبداية
   const [messagesHistory, setMessagesHistory] = useState([
-    { id: 1, title: 'تذكير بموعد الامتحان', target: 'الصف السابع (أ)', date: '2026-09-28' },
+    { id: 1, title: 'تذكير بموعد الامتحان', target: 'الصف السابع (أ)', date: '2026-09-28', type: 'class' },
   ]);
+
+  const validate = () => {
+    const newErrors = {};
+    if (!selectedTarget) newErrors.target = targetType === 'class' ? 'اختر الصف' : 'اختر الطالب';
+    if (!title.trim()) newErrors.title = 'العنوان مطلوب';
+    if (!content.trim()) newErrors.content = 'النص مطلوب';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!title || !content) {
-      alert('يرجى كتابة عنوان ورسالة قبل الإرسال');
-      return;
-    }
+    if (!validate()) return;
 
     const newMessage = {
       id: Date.now(),
-      title: title,
-      target: selectedTarget || (targetType === 'class' ? 'جميع الصفوف' : 'طالب محدد'),
+      title,
+      target: selectedTarget,
       date: new Date().toLocaleDateString('ar-EG'),
+      type: targetType,
     };
 
-    // إضافة الرسالة للأرشيف وتنظيف الحقول
     setMessagesHistory([newMessage, ...messagesHistory]);
     setTitle('');
     setContent('');
     setSelectedTarget('');
-    alert('تم إرسال الرسالة بنجاح!');
+    setErrors({});
   };
 
   return (
-    <div className="teacher-messages-container">
-      <h2 className="page-title">إرسال الرسائل والإشعارات</h2>
+    <div className="teacher-messages-container" dir="rtl">
+      {/* 1. البنر العلوي */}
+      <div className="messages-header-banner">
+        <h2>إرسال الرسائل والإشعارات 💬</h2>
+        <p>تواصل مع طلابك وأرسل الإشعارات بسهولة عبر المنصة.</p>
+      </div>
 
+      {/* 2. الشبكة */}
       <div className="messages-grid">
-        {/* قسم إنشاء وتعبئة الرسالة */}
+
+        {/* النموذج — أول عنصر (يمين في RTL) */}
         <div className="card message-form-card">
-          <h3>إنشاء رسالة جديدة</h3>
+          <div className="card-header-title">
+            <span className="card-icon">✏️</span>
+            <h3>إنشاء رسالة جديدة</h3>
+          </div>
+
           <form onSubmit={handleSubmit}>
-            {/* اختيار طريقة الإرسال */}
+            {/* نوع المستلم */}
             <div className="form-group">
               <label className="form-label">إرسال إلى:</label>
               <div className="radio-group">
-                <label>
+                <label className={`radio-option ${targetType === 'class' ? 'active' : ''}`}>
                   <input
                     type="radio"
                     name="targetType"
                     value="class"
                     checked={targetType === 'class'}
-                    onChange={() => setTargetType('class')}
+                    onChange={() => { setTargetType('class'); setSelectedTarget(''); }}
                   />
-                  صف كامل
+                  <span>🏫 صف كامل</span>
                 </label>
-                <label>
+                <label className={`radio-option ${targetType === 'students' ? 'active' : ''}`}>
                   <input
                     type="radio"
                     name="targetType"
                     value="students"
                     checked={targetType === 'students'}
-                    onChange={() => setTargetType('students')}
+                    onChange={() => { setTargetType('students'); setSelectedTarget(''); }}
                   />
-                  طلاب محددين
+                  <span>👤 طلاب محددين</span>
                 </label>
               </div>
             </div>
 
-            {/* القائمة المنسدلة لاختيار الصف أو الطالب */}
+            {/* القائمة المنسدلة */}
             <div className="form-group">
               <label className="form-label">
                 {targetType === 'class' ? 'اختر الصف:' : 'اختر الطالب:'}
               </label>
               <select
-                className="form-control"
+                className={`form-control ${errors.target ? 'error' : ''}`}
                 value={selectedTarget}
-                onChange={(e) => setSelectedTarget(e.target.value)}
+                onChange={(e) => { setSelectedTarget(e.target.value); setErrors({ ...errors, target: '' }); }}
               >
                 <option value="">-- اختر من القائمة --</option>
                 {targetType === 'class' ? (
@@ -94,57 +109,76 @@ export default function TeacherMessages() {
                   </>
                 )}
               </select>
+              {errors.target && <span className="field-error">{errors.target}</span>}
             </div>
 
-            {/* عنوان الرسالة */}
+            {/* العنوان */}
             <div className="form-group">
               <label className="form-label">عنوان الرسالة:</label>
               <input
                 type="text"
-                className="form-control"
+                className={`form-control ${errors.title ? 'error' : ''}`}
                 placeholder="مثال: واجب مشروع العلوم"
                 value={title}
-                onChange={(e) => setTitle(e.target.value)}
+                onChange={(e) => { setTitle(e.target.value); setErrors({ ...errors, title: '' }); }}
               />
+              {errors.title && <span className="field-error">{errors.title}</span>}
             </div>
 
-            {/* نص الرسالة */}
+            {/* النص */}
             <div className="form-group">
               <label className="form-label">نص الرسالة:</label>
               <textarea
-                className="form-control textarea-control"
-                rows="5"
+                className={`form-control textarea-control ${errors.content ? 'error' : ''}`}
+                rows="6"
                 placeholder="اكتب تفاصيل الإشعار أو الرسالة هنا..."
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={(e) => { setContent(e.target.value); setErrors({ ...errors, content: '' }); }}
               ></textarea>
+              {errors.content && <span className="field-error">{errors.content}</span>}
             </div>
 
-            <button type="submit" className="btn-send">
-              إرسال الرسالة
-            </button>
+            <div className="form-actions">
+              <button type="submit" className="btn-send">
+                <span>📤</span> إرسال الرسالة
+              </button>
+            </div>
           </form>
         </div>
 
-        {/* قسم سجل الرسائل المرسلة */}
+        {/* السجل */}
         <div className="card history-card">
-          <h3>الرسائل المرسلة مؤخراً</h3>
+          <div className="card-header-title">
+            <span className="card-icon">📨</span>
+            <h3>الرسائل المرسلة مؤخراً</h3>
+            <span className="history-count">{messagesHistory.length}</span>
+          </div>
+
           <div className="history-list">
             {messagesHistory.length === 0 ? (
-              <p className="empty-msg">لا توجد رسائل مرسلة بعد.</p>
+              <div className="empty-state">
+                <span className="empty-icon">📭</span>
+                <p className="empty-msg">لا توجد رسائل مرسلة بعد.</p>
+              </div>
             ) : (
               messagesHistory.map((item) => (
                 <div key={item.id} className="history-item">
-                  <h4>{item.title}</h4>
+                  <div className="history-item-header">
+                    <h4>{item.title}</h4>
+                    <span className={`history-type-badge ${item.type}`}>
+                      {item.type === 'class' ? '🏫' : '👤'}
+                    </span>
+                  </div>
                   <div className="history-meta">
                     <span className="target-tag">إلى: {item.target}</span>
-                    <span className="date-tag">{item.date}</span>
+                    <span className="date-tag">📅 {item.date}</span>
                   </div>
                 </div>
               ))
             )}
           </div>
         </div>
+
       </div>
     </div>
   );

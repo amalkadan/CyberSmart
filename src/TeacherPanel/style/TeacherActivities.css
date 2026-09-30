@@ -7,7 +7,8 @@
     -apple-system,
     sans-serif;
   color: #ffffff;
-  background-color: white;
+  background-color: #F4F9FF ;
+  border-radius: 50px;
 }
 
 .activities-container .activity-assignment-card {
@@ -35,7 +36,7 @@
 }
 
 .activities-container .activity-preview:focus-visible {
-  outline: 3px solid #38bdf8;
+  outline: 3px solid #1a90c3;
   outline-offset: -3px;
 }
 
@@ -106,15 +107,15 @@
 
 /* 1. البنر العلوي */
 .hero-banner {
-  background: linear-gradient(135deg, #020813 0%, #001727 100%);
+   background: linear-gradient(90deg, #0284c7 0%, #06b6d4 100%);
   border: 1px solid rgba(56, 189, 248, 0.2);
-  border-radius: 24px;
-  padding: 28px 36px;
-  margin-bottom: 32px;
+  border-radius: 20px;
+  padding: 24px 32px;
+  margin-bottom: 24px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
 }
 
 .hero-content {
@@ -125,24 +126,24 @@
 }
 
 .hero-text h1 {
-  font-size: 30px;
+  font-size: 50px;
   font-weight: 800;
   margin: 0 0 8px 0;
-  color: #38bdf8;
+  color: #f5fbfd;
 }
 
 .hero-text p {
-  font-size: 15px;
-  color: #94a3b8;
+  font-size: 25px;
+  color: #f4f7fa;
   margin: 0;
 }
 
 .hero-btn {
-  background: linear-gradient(90deg, #0284c7 0%, #06b6d4 100%);
+  background: linear-gradient(135deg, #020813 0%, #025c9d 100%);
   color: #ffffff;
   border: none;
   padding: 12px 24px;
-  font-size: 15px;
+  font-size: 23px;
   font-weight: bold;
   border-radius: 12px;
   cursor: pointer;
@@ -153,6 +154,7 @@
 .hero-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(6, 182, 212, 0.45);
+  background: linear-gradient(135deg, #025c9d 0%, #020813 100%);
 }
 
 .hero-image-wrapper {
