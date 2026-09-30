@@ -2,11 +2,14 @@
   display: flex !important;
   justify-content: space-between !important; /* تباعد بين اليمين واليسار */
   align-items: center !important; /* محاذاة عمودية في المنتصف */
-  background-color: #ffffff;
+  
+  background:
+    radial-gradient(circle at 50% 100%, #ffffff, transparent 45%),
+    linear-gradient(120deg, #69dcfb, #e9fcff 53%, #75e2fa);
   padding: 16px 28px;
   border-radius: 20px;
   margin-bottom: 24px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.03);
+  box-shadow: 0 14px 29px rgba(0, 12, 37, 0.22);
   width: 100%;
   box-sizing: border-box;
 }
@@ -18,7 +21,7 @@
 
 .welcome-section h2 {
   margin: 0;
-  font-size: 20px;
+  font-size: 40px;
   font-weight: 700;
   color: #0f172a;
   display: flex;
@@ -28,7 +31,7 @@
 
 .welcome-section p {
   margin: 4px 0 0 0;
-  font-size: 13px;
+  font-size: px;
   color: #64748b;
 }
 
